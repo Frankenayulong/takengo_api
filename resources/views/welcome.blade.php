@@ -79,7 +79,7 @@
 
             <div class="content">
                 <div class="title m-b-md">
-                    Laravel
+                    Take N Go API
                 </div>
 
                 <div class="links">
