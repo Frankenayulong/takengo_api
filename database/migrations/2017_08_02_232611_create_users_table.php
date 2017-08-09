@@ -21,29 +21,26 @@ class CreateUsersTable extends Migration
             $table->date('birth_date')->nullable();
             $table->string('gender', 1);
             $table->text('password');
-            $table->jsonb('location_origin')->default(json_encode([
+            $table->json('location_origin')->default(json_encode([
                 'address' => '',
                 'city' => '',
                 'country' => '',
                 'postcode' => ''
             ]));
-            $table->jsonb('token')->default(json_encode([
-                'takengo' => '',
-                'google' => '',
-                'facebook' => ''
-            ]));
-            $table->jsonb('driver_license')->default(json_encode([
+            $table->string('token')->default('');
+            $table->string('fb_uid')->unique();
+            $table->json('driver_license')->default(json_encode([
                 'picture' => '',
                 'number' => '',
                 'expiry_date' => '',
                 'country_issuer' => ''
             ]));
             $table->string('phone');
-            $table->jsonb('status')->default(json_encode([
+            $table->json('status')->default(json_encode([
                 'verified' => false,
                 'license' => false
             ]));
-            $table->jsonb('metadata')->default(json_encode([
+            $table->json('metadata')->default(json_encode([
                 'notes' => json_encode([]),
                 'ips' => json_encode([])
             ]));

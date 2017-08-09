@@ -16,7 +16,7 @@ class CreateNewsletterEmailsTable extends Migration
         Schema::create('newsletter_emails', function (Blueprint $table) {
             $table->increments('neid');
             $table->string('email')->unique();
-            $table->jsonb('status')->default(json_encode([
+            $table->json('status')->default(json_encode([
                 'active' => false
             ]));
             $table->timestamps();

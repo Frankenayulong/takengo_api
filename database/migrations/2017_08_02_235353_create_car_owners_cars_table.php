@@ -28,7 +28,7 @@ class CreateCarOwnersCarsTable extends Migration
             ->on('cars')
             ->onDelete('cascade');
 
-            $table->jsonb('status')->default(json_encode([
+            $table->json('status')->default(json_encode([
                 'active' => true,
                 'notes' => json_encode([])
             ]));

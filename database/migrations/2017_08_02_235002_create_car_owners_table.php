@@ -25,24 +25,24 @@ class CreateCarOwnersTable extends Migration
             ->on('users')
             ->onDelete('set null');
 
-            $table->jsonb('required_documents')->default(json_encode([
+            $table->json('required_documents')->default(json_encode([
                 'tax' => json_encode([
                     'url' => '',
                     'accepted' => false
                 ])
             ]));
             
-            $table->jsonb('bank_details')->default(json_encode([
+            $table->json('bank_details')->default(json_encode([
                 'account_number' => '',
                 'bsb' => '',
                 'bank' => '',
                 'account_holder' => ''
             ]));
             $table->string('phone');
-            $table->jsonb('status')->default(json_encode([
+            $table->json('status')->default(json_encode([
                 'verified' => false
             ]));
-            $table->jsonb('metadata')->default(json_encode([
+            $table->json('metadata')->default(json_encode([
                 'notes' => json_encode([])
             ]));
             $table->timestamps();

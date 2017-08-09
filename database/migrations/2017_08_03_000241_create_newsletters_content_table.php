@@ -24,7 +24,7 @@ class CreateNewslettersContentTable extends Migration
             ->on('admins')
             ->onDelete('set null');
 
-            $table->jsonb('status')->default(json_encode([
+            $table->json('status')->default(json_encode([
                 'notes' => json_encode([])
             ]));
             $table->timestamps();

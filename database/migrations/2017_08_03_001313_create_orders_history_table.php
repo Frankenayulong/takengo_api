@@ -28,7 +28,7 @@ class CreateOrdersHistoryTable extends Migration
             ->on('users')
             ->onDelete('cascade');
 
-            $table->jsonb('metadata')->default(json_encode([
+            $table->json('metadata')->default(json_encode([
                 'notes' => json_encode([]),
                 'locations' => json_encode([
                     'lat' => '',

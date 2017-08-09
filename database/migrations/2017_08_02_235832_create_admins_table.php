@@ -19,14 +19,14 @@ class CreateAdminsTable extends Migration
             $table->string('last_name');
             $table->string('email')->unique();
             $table->text('password');
-            $table->jsonb('token')->default(json_encode([
+            $table->json('token')->default(json_encode([
                 'takengo' => ''
             ]));
             $table->string('phone');
-            $table->jsonb('status')->default(json_encode([
+            $table->json('status')->default(json_encode([
                 'active' => false
             ]));
-            $table->jsonb('metadata')->default(json_encode([
+            $table->json('metadata')->default(json_encode([
                 'notes' => json_encode([]),
                 'ips' => json_encode([])
             ]));

@@ -20,7 +20,7 @@ class CreateCarsLocationsTable extends Migration
             ->references('cid')
             ->on('cars')
             ->onDelete('cascade');
-            $table->jsonb('location')->default(json_encode([
+            $table->json('location')->default(json_encode([
                 'lat' => '',
                 'long' => ''
             ]));

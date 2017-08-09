@@ -30,10 +30,10 @@ class CreateCarsTable extends Migration
             $table->string('release_year', 4);
             $table->string('model');
             $table->integer('capacity')->unsigned();
-            $table->jsonb('conditions')->default(json_encode([
+            $table->json('conditions')->default(json_encode([
 
             ]));
-            $table->jsonb('metadata')->default(json_encode([
+            $table->json('metadata')->default(json_encode([
                 'notes' => json_encode([]),
                 'long' => ''
             ]));
