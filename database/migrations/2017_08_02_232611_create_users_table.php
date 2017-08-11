@@ -15,12 +15,11 @@ class CreateUsersTable extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->increments('uid');
-            $table->string('first_name');
-            $table->string('last_name');
+            $table->string('first_name')->nullable();
+            $table->string('last_name')->nullable();
             $table->string('email')->unique();
             $table->date('birth_date')->nullable();
-            $table->string('gender', 1);
-            $table->text('password');
+            $table->string('gender', 1)->default('U');
             $table->json('location_origin')->default(json_encode([
                 'address' => '',
                 'city' => '',
@@ -28,14 +27,14 @@ class CreateUsersTable extends Migration
                 'postcode' => ''
             ]));
             $table->string('token')->default('');
-            $table->string('fb_uid')->unique();
+            $table->string('fb_uid')->unique()->nullable();
             $table->json('driver_license')->default(json_encode([
                 'picture' => '',
                 'number' => '',
                 'expiry_date' => '',
                 'country_issuer' => ''
             ]));
-            $table->string('phone');
+            $table->string('phone')->nullable();
             $table->json('status')->default(json_encode([
                 'verified' => false,
                 'license' => false

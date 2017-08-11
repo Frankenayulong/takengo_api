@@ -15,14 +15,14 @@ class CreateAdminsTable extends Migration
     {
         Schema::create('admins', function (Blueprint $table) {
             $table->increments('aid');
-            $table->string('first_name');
-            $table->string('last_name');
+            $table->string('first_name')->nullable();
+            $table->string('last_name')->nullable();
             $table->string('email')->unique();
             $table->text('password');
             $table->json('token')->default(json_encode([
                 'takengo' => ''
             ]));
-            $table->string('phone');
+            $table->string('phone')->nullable();
             $table->json('status')->default(json_encode([
                 'active' => false
             ]));
@@ -31,6 +31,7 @@ class CreateAdminsTable extends Migration
                 'ips' => json_encode([])
             ]));
             $table->ipAddress('last_ip');
+            $table->rememberToken();
             $table->timestamps();
         });
     }
