@@ -103,7 +103,7 @@ class RegisterController extends Controller
 
     public function vendor(Request $request){
         $this->validate($request, [
-            'email' => 'required|exists:users|max:255',
+            'email' => 'required|email|max:255',
             'fb_uid' => 'required|unique:users'
         ]);
         $email = $request->input('email');
