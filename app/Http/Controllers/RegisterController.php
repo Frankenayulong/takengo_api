@@ -75,17 +75,17 @@ class RegisterController extends Controller
             'fb_uid' => 'required|unique:users'
         ]);
         try{
-            $uid = $request->input('uid');
             $fb_uid = $request->input('fb_uid');
+            $email = $request->input('email');
             $token = decrypt($request->cookie('tng_token'));
             $token = (object)$token;
-            if($token->uid != $uid){
+            $customer = Customer::where('token', $token->token)->where('email', $email)->first();
+            if(!$customer || $token->uid != $customer->uid){
                 return [
                     "status" => 'NOT OK',
                     "message" => "Invalid token"
                 ];
             }
-            $customer = Customer::find($request->input('uid'))->where('token', $token->token);
             $customer->fb_uid = $fb_uid;
             $customer->save();
             return [
