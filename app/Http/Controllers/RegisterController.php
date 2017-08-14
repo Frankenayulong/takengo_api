@@ -32,9 +32,7 @@ class RegisterController extends Controller
             "token"=>$customer->token
         ]);
         session([
-            'uid' => $customer->uid,
-            'email' => $customer->email,
-            'token' => $encryptedToken
+            'uid' => $customer->uid
         ]);
         return response([
             'status' => 'OK',
@@ -104,26 +102,27 @@ class RegisterController extends Controller
     public function vendor(Request $request){
         $this->validate($request, [
             'email' => 'required|email|max:255',
-            'fb_uid' => 'required|unique:users'
+            'fb_uid' => 'required|string'
         ]);
         $email = $request->input('email');
         $fb_uid = $request->input('fb_uid');
         $ip = request()->ip();
 
-        $customer = new Customer;
-        $customer->fb_uid = $fb_uid;
-        $customer->token = str_random(16);
-        $customer->email = $email;
-        $customer->last_ip = $ip;
-        $customer->save();
+        $customer = Customer::where('email', $email)->first();
+        if(!$customer){
+            $customer = new Customer;
+            $customer->fb_uid = $fb_uid;
+            $customer->token = str_random(16);
+            $customer->email = $email;
+            $customer->last_ip = $ip;
+            $customer->save();
+        }
         $encryptedToken = encrypt([
             "uid"=>$customer->uid, 
             "token"=>$customer->token
         ]);
         session([
-            'uid' => $customer->uid,
-            'email' => $customer->email,
-            'token' => $encryptedToken
+            'uid' => $customer->uid
         ]);
         return response([
             'status' => 'OK',

@@ -23,4 +23,4 @@ Route::post('/register/uid', 'RegisterController@uid');
 Route::post('/register/error', 'RegisterController@error');
 Route::post('/token', 'LoginController@check_token');
 Route::post('/reset_auth', 'LoginController@remove_cookie');
-Route::post('/get_profile', 'LoginController@get_profile');
+Route::post('/get_profile', 'LoginController@get_profile')->middleware(['token']);

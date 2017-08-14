@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Cookie\CookieJar;
 use Illuminate\Contracts\Encryption\DecryptException;
+use App\Customer;
 
 class LoginController extends Controller
 {
@@ -12,13 +13,30 @@ class LoginController extends Controller
         if($request->cookie('tng_token') === null){
             return response('nocookie', 200);
         }
+        $this->validate($request, [
+            'email' => 'required|exists:users|max:255'
+        ]);
         try{
-            return $request->cookie('tng_token');
+            $email = $request->input('email');
             $token = decrypt($request->cookie('tng_token'));
             $token = (object)$token;
-            return $request->cookie('tng_token');
+            $customer = Customer::where('token', $token->token)->where('email', $email)->first();
+            if(!$customer || $token->uid != $customer->uid){
+                return [
+                    "status" => 'NOT OK',
+                    "message" => "Invalid token"
+                ];
+            }
+            session(['uid' => $customer->uid]);
+            return [
+                "status" => "OK",
+                "message" => "Token Authorized"
+            ];
         }catch(DecryptException $e){
-            return $request->cookie('tng_token');
+            return [
+                "status" => 'NOT OK',
+                "message" => "Invalid token"
+            ];
         }
     }
 
