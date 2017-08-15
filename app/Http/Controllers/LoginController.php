@@ -40,6 +40,40 @@ class LoginController extends Controller
         }
     }
 
+    public function login(Request $request){
+        $this->validate($request, [
+            'email' => 'required|email|max:255|exists:users,email',
+            'fb_uid' => 'required|string|exists:users,fb_uid'
+        ]);
+        $email = $request->input('email');
+        $fb_uid = $request->input('fb_uid');
+        $ip = request()->ip();
+
+        $customer = Customer::where('email', $email)->where('fb_uid', $fb_uid)->first();
+        $customer->token = str_random(16);
+        $customer->last_ip = $ip;
+        $customer->save();
+        if(!$customer){
+            return response([
+                'status' => 'NOTOK',
+                'message' => 'Invalid Credentials'
+            ]);
+        }
+        $encryptedToken = encrypt([
+            "uid"=>$customer->uid, 
+            "token"=>$customer->token
+        ]);
+        session([
+            'uid' => $customer->uid
+        ]);
+        return response([
+            'status' => 'OK',
+            'user' => $customer
+        ])
+        ->header('Content-Type', 'application/json')
+        ->cookie('tng_token', $encryptedToken, 2628000, '/', config('session.domain'), false, true);
+    }
+
     public function remove_cookie(CookieJar $cookieJar, Request $request){
         $cookie = $cookieJar->forget('tng_token', '/', config('session.domain'));
         return response("done", 200)
