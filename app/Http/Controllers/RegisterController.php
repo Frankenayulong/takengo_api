@@ -114,9 +114,11 @@ class RegisterController extends Controller
         $vendor = $request->input('vendor');
         $ip = request()->ip();
         $callback = $request->input('callback', 'http://takengo.dev');
+        $new_user = false;
 
         $customer = Customer::where('email', $email)->first();
         if(!$customer){
+            $new_user = true;
             $customer = new Customer;
             $customer->token = str_random(16);
             $customer->email = $email;
@@ -135,6 +137,9 @@ class RegisterController extends Controller
             'uid' => $customer->uid
         ]);
         $cookie = $cookieJar->make('tng_token', $encryptedToken, 2628000, '/', config('session.domain'), false, true);
-        return response("ok")->withCookie($cookie);
+        return response([
+            'status' => 'OK',
+            'new_user' => $new_user
+        ], 200)->withCookie($cookie);
     }
 }

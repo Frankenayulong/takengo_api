@@ -38,7 +38,7 @@ return [
     'google' => [
         'client_id' => '581373078230-n97rpac7ir7vines01nc8je8ut00nes1.apps.googleusercontent.com',
         'client_secret' => 'aPCuHixj5MoGl5vaAPC8ulEx',
-        'redirect' => env('VENDOR_CALLBACK'.'/google' ,'http://api.takengo.dev/auth/callback/google'),
+        'redirect' => env('VENDOR_CALLBACK' ,'http://api.takengo.dev/auth/callback'),
     ],
 
 ];

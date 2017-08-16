@@ -87,19 +87,26 @@ class LoginController extends Controller
         return response("ok", 200);
     }
     
-    public function googleProviderRedirect(Request $request){
-        $callback_url = $request->server('HTTP_REFERRER');
+    public function providerRedirect(Request $request, $provider){
+        if($provider != 'google' && $provider != 'facebook'){
+            return back()->with(['errmsg' => 'Invalid provider']);
+        }
+        $callback_url = $request->server('HTTP_REFERER');
         if(strlen($callback_url) <= 0){
             $callback_url = 'http://takengo.dev';
         }
-        return Socialite::driver('google')
-        ->with(['callback' => $callback_url])->redirect();
+        session([
+            'oauthprv'=> $provider,
+            'oauthcb' => $callback_url
+        ]);
+        return Socialite::driver($provider)->redirect();
     }
 
-    public function googleProviderCallback(Request $request)
+    public function providerCallback(Request $request)
     {
         $user = Socialite::driver('google')->user();
-        return $request->all();
+        $provider = session('oauthprv');
+        $callback = session('oauthcb');
         $name = $user->getName();
         $parts = explode(" ", $name);
         $last_name = array_pop($parts);
@@ -111,11 +118,11 @@ class LoginController extends Controller
                 'email' => $user->getEmail(),
                 'first_name' => $first_name, 
                 'last_name' => $last_name,
-                'vendor' => 'google',
-                'callback' => $request->server('HTTP_REFERER')
+                'vendor' => $provider,
+                'callback' => $callback
             ]
         ]);
-        return redirect()->away('http://takengo.dev');
-
+        $response = json_decode((string)$result->getBody());
+        return redirect()->away((is_null(parse_url($callback, PHP_URL_HOST)) ? '//' : '').$callback.'?new_user='.$response->new_user);
     }
 }
