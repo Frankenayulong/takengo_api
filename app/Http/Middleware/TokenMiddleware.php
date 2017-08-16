@@ -16,33 +16,17 @@ class TokenMiddleware
      */
     public function handle($request, Closure $next)
     {
-        $uid = session('uid');
-        $email = $request->input('email');
-        $token = $request->cookie('tng_token');
-        if(!$token || !$email){
+        if(!$request->session()->exists('uid') || !$request->session()->exists('email') || !$request->session()->exists('token')){
             return response([
                 "status" => "NOTOK",
                 "message" => "Invalid Token"
             ]);
         }
-
-        try{
-            $token = decrypt($token);
-            $token = (object)$token;
-            $customer = Customer::where('token', $token->token)->where('email', $email)->first();
-            if(!$customer || $token->uid != $customer->uid || $token->uid != $uid){
-                return response([
-                    "status" => 'NOT OK',
-                    "message" => "Invalid token"
-                ]);
-            }
-
-            return response([
-                "status" => "OK",
-                "message" => "Token Authorized"
-            ]);
-
-        }catch(DecryptException $e){
+        $uid = session('uid');
+        $email = session('email');
+        $token = session('token');
+        $customer = Customer::where('uid', $uid)->where('token', $token)->where('email', $email)->first();
+        if(!$customer){
             return response([
                 "status" => 'NOT OK',
                 "message" => "Invalid token"

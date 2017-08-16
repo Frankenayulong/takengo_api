@@ -9,6 +9,7 @@ use App\Customer;
 use Socialite;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller
 {
@@ -16,58 +17,70 @@ class LoginController extends Controller
         if($request->cookie('tng_token') === null){
             return response('nocookie', 200);
         }
-        $this->validate($request, [
-            'email' => 'required|exists:users|max:255'
-        ]);
         try{
-            $email = $request->input('email');
-            $token = decrypt($request->cookie('tng_token'));
-            $token = (object)$token;
-            $customer = Customer::where('token', $token->token)->where('email', $email)->first();
-            if(!$customer || $token->uid != $customer->uid){
-                return [
+            $token_raw = decrypt($request->cookie('tng_token'));
+            $token = (object)$token_raw;
+            if(!property_exists($token, 'uid') || ! property_exists($token, 'token') || !property_exists($token, 'email')){
+                return response([
                     "status" => 'NOT OK',
                     "message" => "Invalid token"
-                ];
+                ]);
             }
-            session(['uid' => $customer->uid]);
-            return [
+            $customer = Customer::where('uid', $token->uid)->where('token', $token->token)->where('email', $token->email)->first();
+            if(!$customer){
+                return response([
+                    "status" => 'NOT OK',
+                    "message" => "Invalid token"
+                ]);
+            }
+            session([
+                'uid' => $customer->uid,
+                'email' => $customer->email,
+                'token' => $customer->token
+            ]);
+            return response([
                 "status" => "OK",
                 "message" => "Token Authorized"
-            ];
+            ]);
         }catch(DecryptException $e){
-            return [
+            return response([
                 "status" => 'NOT OK',
                 "message" => "Invalid token"
-            ];
+            ]);
         }
     }
 
     public function login(Request $request){
         $this->validate($request, [
             'email' => 'required|email|max:255|exists:users,email',
-            'fb_uid' => 'required|string|exists:users,fb_uid'
+            'password' => 'required|string'
         ]);
         $email = $request->input('email');
-        $fb_uid = $request->input('fb_uid');
+        $password = $request->input('password');
         $ip = request()->ip();
 
-        $customer = Customer::where('email', $email)->where('fb_uid', $fb_uid)->first();
-        $customer->token = str_random(16);
-        $customer->last_ip = $ip;
-        $customer->save();
+        $customer = Customer::where('email', $email)->first();
         if(!$customer){
             return response([
                 'status' => 'NOTOK',
                 'message' => 'Invalid Credentials'
             ]);
         }
+        if(!Hash::check($password, $customer->makeVisible('password')->password)){
+            return response([
+                'status' => 'NOTOK',
+                'message' => 'Invalid Credentials'
+            ]);
+        }
+        $customer->makeHidden('password');
+        $customer->token = str_random(16);
+        $customer->last_ip = $ip;
+        $customer->save();
+
         $encryptedToken = encrypt([
             "uid"=>$customer->uid, 
-            "token"=>$customer->token
-        ]);
-        session([
-            'uid' => $customer->uid
+            "token"=>$customer->token,
+            "email"=>$customer->email
         ]);
         return response([
             'status' => 'OK',
@@ -84,7 +97,12 @@ class LoginController extends Controller
     }
 
     public function get_profile(Request $request){
-        return response("ok", 200);
+        $uid = session('uid');
+        $customer = Customer::find($uid);
+        return response([
+            'status' => 'OK',
+            'user' => $customer
+        ], 200);
     }
     
     public function providerRedirect(Request $request, $provider){
@@ -102,10 +120,10 @@ class LoginController extends Controller
         return Socialite::driver($provider)->redirect();
     }
 
-    public function providerCallback(Request $request)
+    public function providerCallback(CookieJar $cookieJar, Request $request)
     {
-        $user = Socialite::driver('google')->user();
         $provider = session('oauthprv');
+        $user = Socialite::driver($provider)->user();
         $callback = session('oauthcb');
         $name = $user->getName();
         $parts = explode(" ", $name);
@@ -123,6 +141,7 @@ class LoginController extends Controller
             ]
         ]);
         $response = json_decode((string)$result->getBody());
-        return redirect()->away((is_null(parse_url($callback, PHP_URL_HOST)) ? '//' : '').$callback.'?new_user='.$response->new_user);
+        $cookie = $cookieJar->make('tng_token', $response->token, 2628000, '/', config('session.domain'), false, true);
+        return redirect()->away((is_null(parse_url($callback, PHP_URL_HOST)) ? '//' : '').$callback)->withCookie($cookie);
     }
 }

@@ -12,7 +12,7 @@ class Customer extends Model
      * @var array
      */
     protected $hidden = [
-        'token', 'fb_uid',
+        'token', 'password', 'metadata', 'updated_at'
     ];
 
     protected $table = 'users';

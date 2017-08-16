@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use App\Customer;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Cookie\CookieJar;
 
 class RegisterController extends Controller
 {
@@ -30,13 +29,12 @@ class RegisterController extends Controller
         $customer->email = $email;
         $customer->last_ip = $ip;
         $customer->password = Hash::make($password);
+        $customer->vendor = 'takengo';
         $customer->save();
         $encryptedToken = encrypt([
             "uid"=>$customer->uid, 
-            "token"=>$customer->token
-        ]);
-        session([
-            'uid' => $customer->uid
+            "token"=>$customer->token,
+            "email"=>$customer->email
         ]);
         return response([
             'status' => 'OK',
@@ -46,64 +44,7 @@ class RegisterController extends Controller
         ->cookie('tng_token', $encryptedToken, 2628000, '/', config('session.domain'), false, true);
     }
 
-    public function error(Request $request){
-        $email = $request->input('email');
-        $token = $request->session()->get('token');
-        if(!$token){
-            return response('error');
-        }
-        try{
-            $token = (object)decrypt($token);
-        }catch(DecryptException $e){
-            return response('decrypt fail');
-        }
-
-        $user = Customer::where('email', $email)
-        ->where('token', $token->token)
-        ->select('uid', 'token')
-        ->first();
-
-        if(!$user){
-            //ERROR
-            return response($email);
-        }
-        $user->delete();
-        return response('done');
-    }
-
-    public function uid(Request $request){
-        $this->validate($request, [
-            'email' => 'required|exists:users|max:255',
-            'fb_uid' => 'required|unique:users'
-        ]);
-        try{
-            $fb_uid = $request->input('fb_uid');
-            $email = $request->input('email');
-            $token = decrypt($request->cookie('tng_token'));
-            $token = (object)$token;
-            $customer = Customer::where('token', $token->token)->where('email', $email)->first();
-            if(!$customer || $token->uid != $customer->uid){
-                return [
-                    "status" => 'NOT OK',
-                    "message" => "Invalid token"
-                ];
-            }
-            $customer->fb_uid = $fb_uid;
-            $customer->save();
-            return [
-                "status" => "OK",
-                "message" => "Customer FBUID updated"
-            ];
-        }catch(DecryptException $e){
-            return [
-                "status" => 'NOT OK',
-                "message" => "Invalid token"
-            ];
-        }
-        
-    }
-
-    public function vendor(CookieJar $cookieJar, Request $request){
+    public function vendor(Request $request){
         $this->validate($request, [
             'email' => 'required|email|max:255',
             'vendor' => 'required|in:google,facebook'
@@ -131,15 +72,14 @@ class RegisterController extends Controller
         }
         $encryptedToken = encrypt([
             "uid"=>$customer->uid, 
-            "token"=>$customer->token
+            "token"=>$customer->token,
+            "email"=>$customer->email
         ]);
-        session([
-            'uid' => $customer->uid
-        ]);
-        $cookie = $cookieJar->make('tng_token', $encryptedToken, 2628000, '/', config('session.domain'), false, true);
+        
         return response([
             'status' => 'OK',
-            'new_user' => $new_user
-        ], 200)->withCookie($cookie);
+            'new_user' => $new_user,
+            'token' => $encryptedToken
+        ], 200);
     }
 }

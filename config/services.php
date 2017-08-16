@@ -41,4 +41,10 @@ return [
         'redirect' => env('VENDOR_CALLBACK' ,'http://api.takengo.dev/auth/callback'),
     ],
 
+    'facebook' => [
+        'client_id' => '123204158304765',
+        'client_secret' => '82f90aa61d44f2f15303210fe641c7ec',
+        'redirect' => env('VENDOR_CALLBACK' ,'http://api.takengo.dev/auth/callback'),
+    ],
+
 ];
