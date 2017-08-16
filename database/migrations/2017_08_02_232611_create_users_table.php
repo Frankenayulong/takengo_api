@@ -27,7 +27,8 @@ class CreateUsersTable extends Migration
                 'postcode' => ''
             ]));
             $table->string('token')->default('');
-            $table->string('fb_uid')->unique()->nullable();
+            $table->string('password');
+            // $table->string('fb_uid')->unique()->nullable();
             $table->json('driver_license')->default(json_encode([
                 'picture' => '',
                 'number' => '',
@@ -43,6 +44,7 @@ class CreateUsersTable extends Migration
                 'notes' => json_encode([]),
                 'ips' => json_encode([])
             ]));
+            $table->string('vendor', 10)->default('takengo');
             $table->ipAddress('last_ip');
             $table->timestamps();
         });

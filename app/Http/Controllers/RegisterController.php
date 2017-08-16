@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Customer;
 use Illuminate\Contracts\Encryption\DecryptException;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Cookie\CookieJar;
 
 class RegisterController extends Controller
 {
@@ -14,6 +16,7 @@ class RegisterController extends Controller
             'password' => 'required|min:8|confirmed'
         ]);
         $email = $request->input('email');
+        $password = $request->input('password');
         $ip = request()->ip();
         $customer_check = Customer::where('email', $email)->count();
         if($customer_check > 0){
@@ -26,6 +29,7 @@ class RegisterController extends Controller
         $customer->token = str_random(16);
         $customer->email = $email;
         $customer->last_ip = $ip;
+        $customer->password = Hash::make($password);
         $customer->save();
         $encryptedToken = encrypt([
             "uid"=>$customer->uid, 
@@ -99,21 +103,27 @@ class RegisterController extends Controller
         
     }
 
-    public function vendor(Request $request){
+    public function vendor(CookieJar $cookieJar, Request $request){
         $this->validate($request, [
             'email' => 'required|email|max:255',
-            'fb_uid' => 'required|string'
+            'vendor' => 'required|in:google,facebook'
         ]);
         $email = $request->input('email');
-        $fb_uid = $request->input('fb_uid');
+        $first_name = $request->input('first_name');
+        $last_name = $request->input('last_name');
+        $vendor = $request->input('vendor');
         $ip = request()->ip();
+        $callback = $request->input('callback', 'http://takengo.dev');
 
         $customer = Customer::where('email', $email)->first();
         if(!$customer){
             $customer = new Customer;
-            $customer->fb_uid = $fb_uid;
             $customer->token = str_random(16);
             $customer->email = $email;
+            $customer->vendor = $vendor;
+            $customer->first_name = $first_name;
+            $customer->password = Hash::make(str_random(32));
+            $customer->last_name = $last_name;
             $customer->last_ip = $ip;
             $customer->save();
         }
@@ -124,11 +134,7 @@ class RegisterController extends Controller
         session([
             'uid' => $customer->uid
         ]);
-        return response([
-            'status' => 'OK',
-            'user' => $customer
-        ])
-        ->header('Content-Type', 'application/json')
-        ->cookie('tng_token', $encryptedToken, 2628000, '/', config('session.domain'), false, true);
+        $cookie = $cookieJar->make('tng_token', $encryptedToken, 2628000, '/', config('session.domain'), false, true);
+        return response("ok")->withCookie($cookie);
     }
 }

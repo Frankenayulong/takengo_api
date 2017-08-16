@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use Illuminate\Cookie\CookieJar;
 use Illuminate\Contracts\Encryption\DecryptException;
 use App\Customer;
+use Socialite;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Client;
 
 class LoginController extends Controller
 {
@@ -84,4 +87,35 @@ class LoginController extends Controller
         return response("ok", 200);
     }
     
+    public function googleProviderRedirect(Request $request){
+        $callback_url = $request->server('HTTP_REFERRER');
+        if(strlen($callback_url) <= 0){
+            $callback_url = 'http://takengo.dev';
+        }
+        return Socialite::driver('google')
+        ->with(['callback' => $callback_url])->redirect();
+    }
+
+    public function googleProviderCallback(Request $request)
+    {
+        $user = Socialite::driver('google')->user();
+        return $request->all();
+        $name = $user->getName();
+        $parts = explode(" ", $name);
+        $last_name = array_pop($parts);
+        $first_name = implode(" ", $parts);
+
+        $client = new Client(); //GuzzleHttp\Client
+        $result = $client->post(route('vendor.register'), [
+            'form_params' => [
+                'email' => $user->getEmail(),
+                'first_name' => $first_name, 
+                'last_name' => $last_name,
+                'vendor' => 'google',
+                'callback' => $request->server('HTTP_REFERER')
+            ]
+        ]);
+        return redirect()->away('http://takengo.dev');
+
+    }
 }
