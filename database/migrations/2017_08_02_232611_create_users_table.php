@@ -22,8 +22,8 @@ class CreateUsersTable extends Migration
             $table->string('gender', 1)->default('U');
             $table->json('location_origin')->default(json_encode([
                 'address' => '',
-                'city' => '',
-                'country' => '',
+                'suburb' => '',
+                'state' => '',
                 'postcode' => ''
             ]));
             $table->string('token')->default('');
@@ -38,7 +38,9 @@ class CreateUsersTable extends Migration
             $table->string('phone')->nullable();
             $table->json('status')->default(json_encode([
                 'verified' => false,
-                'license' => false
+                'all_verified' => false,
+                'license' => false,
+                'address' => false
             ]));
             $table->json('metadata')->default(json_encode([
                 'notes' => json_encode([]),

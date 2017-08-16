@@ -19,8 +19,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::post('/register', 'RegisterController@register');
 Route::post('/register/vendor', 'RegisterController@vendor')->name('vendor.register');
-Route::post('/register/uid', 'RegisterController@uid');
-Route::post('/register/error', 'RegisterController@error');
 Route::post('/token', 'LoginController@check_token');
 Route::post('/reset_auth', 'LoginController@remove_cookie');
 Route::post('/profile', 'LoginController@get_profile')->middleware(['token']);
