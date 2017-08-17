@@ -29,7 +29,14 @@ class CreateCarsTable extends Migration
             $table->string('name');
             $table->string('release_year', 4);
             $table->string('model');
-            $table->integer('capacity')->unsigned();
+            $table->integer('capacity')->unsigned()->default(0);
+            $table->integer('large_bags')->unsigned()->default(0);
+            $table->integer('small_bags')->unsigned()->default(0);
+            $table->integer('doors')->unsigned()->default(0);
+            $table->boolean('air_conditioned')->default(false);
+            $table->boolean('unlimited_mileage')->default(false);
+            $table->double('limit_mileage')->default(0);
+            $table->text('fuel_policy')->default('');
             $table->timestamps();
         });
     }

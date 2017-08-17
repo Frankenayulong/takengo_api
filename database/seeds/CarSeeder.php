@@ -42,6 +42,13 @@ class CarSeeder extends Seeder
         $car1->release_year = '2016';
         $car1->model = 'R8';
         $car1->capacity = 4;
+        $car1->doors = 4;
+        $car1->large_bags = 4;
+        $car1->small_bags = 12;
+        $car1->air_conditioned = true;
+        $car1->unlimited_mileage = false;
+        $car1->limit_mileage = 200;
+        $car1->fuel_policy = 'Full to Full';
         $car1->save();
 
         $carLocation1 = new CarLocation;
