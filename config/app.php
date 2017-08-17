@@ -178,7 +178,6 @@ return [
         App\Providers\RouteServiceProvider::class,
         Barryvdh\Cors\ServiceProvider::class,
         Laravel\Socialite\SocialiteServiceProvider::class,
-        Stevebauman\Location\LocationServiceProvider::class,
     ],
 
     /*
@@ -228,7 +227,6 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         'Socialite' => Laravel\Socialite\Facades\Socialite::class,
-        'Location' => Stevebauman\Location\Facades\Location::class,
         ],
 
 ];
