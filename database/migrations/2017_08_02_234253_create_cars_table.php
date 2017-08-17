@@ -37,6 +37,7 @@ class CreateCarsTable extends Migration
             $table->boolean('unlimited_mileage')->default(false);
             $table->double('limit_mileage')->default(0);
             $table->text('fuel_policy')->default('');
+            $table->double('price')->default(0);
             $table->timestamps();
         });
     }
