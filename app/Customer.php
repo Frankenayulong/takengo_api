@@ -12,10 +12,8 @@ class Customer extends Model
      * @var array
      */
     protected $hidden = [
-        'token', 'password', 'metadata', 'updated_at'
+        'token', 'password', 'updated_at'
     ];
-
-    protected $fillable = ['location_origin'];
 
     protected $table = 'users';
     public $timestamps = true;
