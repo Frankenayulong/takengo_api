@@ -19,7 +19,8 @@ class TokenMiddleware
         if(!$request->session()->exists('uid') || !$request->session()->exists('email') || !$request->session()->exists('token')){
             return response([
                 "status" => "NOTOK",
-                "message" => "Invalid Token"
+                "message" => "Invalid Token",
+                "request" => json_encode($request->session()->all())
             ]);
         }
         $uid = session('uid');
@@ -29,7 +30,10 @@ class TokenMiddleware
         if(!$customer){
             return response([
                 "status" => 'NOT OK',
-                "message" => "Invalid token"
+                "message" => "Invalid token",
+                "uid" => $uid,
+                "email" => $email,
+                "token" => $token
             ]);
         }
         return $next($request);

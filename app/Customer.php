@@ -15,6 +15,8 @@ class Customer extends Model
         'token', 'password', 'metadata', 'updated_at'
     ];
 
+    protected $fillable = ['location_origin'];
+
     protected $table = 'users';
     public $timestamps = true;
     protected $primaryKey = 'uid';

@@ -17,9 +17,13 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('/register', 'RegisterController@register');
-Route::post('/register/vendor', 'RegisterController@vendor')->name('vendor.register');
-Route::post('/token', 'LoginController@check_token');
-Route::post('/reset_auth', 'LoginController@remove_cookie');
-Route::post('/profile', 'LoginController@get_profile')->middleware(['token']);
-Route::post('/login', 'LoginController@login');
+Route::group(['middleware' => 'api'], function () {
+    Route::post('/register', 'RegisterController@register');
+    Route::post('/register/vendor', 'RegisterController@vendor')->name('vendor.register');
+    Route::post('/token', 'LoginController@check_token');
+    Route::post('/reset_auth', 'LoginController@remove_cookie');
+    Route::post('/profile', 'LoginController@get_profile')->middleware(['token']);
+    Route::put('/profile/edit', 'ProfileController@update')->middleware(['token']);
+    Route::post('/user/document/upload/{uid}', 'ProfileController@upload');
+    Route::post('/login', 'LoginController@login');
+});
