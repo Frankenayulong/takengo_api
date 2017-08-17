@@ -28,10 +28,10 @@ class CreateCarOwnersCarsTable extends Migration
             ->on('cars')
             ->onDelete('cascade');
 
-            $table->json('status')->default(json_encode([
-                'active' => true,
-                'notes' => json_encode([])
-            ]));
+            // $table->json('status')->default(json_encode([
+            //     'active' => true,
+            //     'notes' => json_encode([])
+            // ]));
             $table->timestamps();
         });
     }

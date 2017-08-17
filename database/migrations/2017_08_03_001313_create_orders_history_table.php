@@ -28,13 +28,13 @@ class CreateOrdersHistoryTable extends Migration
             ->on('users')
             ->onDelete('cascade');
 
-            $table->json('metadata')->default(json_encode([
-                'notes' => json_encode([]),
-                'locations' => json_encode([
-                    'lat' => '',
-                    'long' => ''
-                ])
-            ]));
+            // $table->json('metadata')->default(json_encode([
+            //     'notes' => json_encode([]),
+            //     'locations' => json_encode([
+            //         'lat' => '',
+            //         'long' => ''
+            //     ])
+            // ]));
 
             $table->timestamps();
         });

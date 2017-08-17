@@ -30,12 +30,10 @@ class ProfileController extends Controller
         $customer->gender = $request->gender;
         $customer->phone = $request->phone;
         $customer->birth_date = $request->birth_date;
-        $customer->location_origin = json_encode([
-            'address' => $request->address,
-            'suburb' => $request->suburb,
-            'state' => $request->state,
-            'post_code' => $request->post_code
-        ]);
+        $customer->address = $request->address;
+        $customer->suburb = $request->suburb;
+        $customer->state = $request->state;
+        $customer->post_code = $request->post_code;
         $customer->save();        
         return response($customer);
     }
@@ -68,12 +66,7 @@ class ProfileController extends Controller
                 // Get the absolute web path to the image
                 $imagePath = asset('/images/user/'. $uid . '/documents' . '/' . $file['name']);
     
-                $customer->driver_license = json_encode([
-                    'picture' => $file['name'],
-                    'number' => '',
-                    'expiry_date' => '',
-                    'country_issuer' => ''
-                ]);
+                $customer->driver_license_picture = $file['name'];
                 $customer->save();
                 return[
                   $request, $customer, $imagePath

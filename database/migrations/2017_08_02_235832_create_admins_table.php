@@ -19,17 +19,18 @@ class CreateAdminsTable extends Migration
             $table->string('last_name')->nullable();
             $table->string('email')->unique();
             $table->text('password');
-            $table->json('token')->default(json_encode([
-                'takengo' => ''
-            ]));
+            // $table->json('token')->default(json_encode([
+            //     'takengo' => ''
+            // ]));
+            $table->string('token')->nullable();
             $table->string('phone')->nullable();
-            $table->json('status')->default(json_encode([
-                'active' => false
-            ]));
-            $table->json('metadata')->default(json_encode([
-                'notes' => json_encode([]),
-                'ips' => json_encode([])
-            ]));
+            // $table->json('status')->default(json_encode([
+            //     'active' => false
+            // ]));
+            // $table->json('metadata')->default(json_encode([
+            //     'notes' => json_encode([]),
+            //     'ips' => json_encode([])
+            // ]));
             $table->ipAddress('last_ip');
             $table->rememberToken();
             $table->timestamps();

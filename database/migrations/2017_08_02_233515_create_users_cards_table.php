@@ -23,16 +23,11 @@ class CreateUsersCardsTable extends Migration
 
             $table->string('card_type');
             $table->string('card_number')->index();
-            $table->json('expiry_date')->default(json_encode([
-                'month' => '',
-                'year' => ''
-            ]));
+            $table->integer('exp_month')->unsigned();
+            $table->integer('exp_year')->unsigned();
             $table->string('cvv');
             $table->string('card_holder');
             $table->string('issuer');
-            $table->json('metadata')->default(json_encode([
-                'notes' => json_encode([])
-            ]));
             $table->timestamps();
         });
     }

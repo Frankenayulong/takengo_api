@@ -16,11 +16,9 @@ class CreateCarBrandsTable extends Migration
         Schema::create('car_brands', function (Blueprint $table) {
             $table->increments('cbid');
             $table->string('name');
-            $table->json('metadata')->default(json_encode([
-                'logo' => '',
-                'country_origin' => '',
-                'description' => ''
-            ]));
+            $table->string('country_origin')->nullable();
+            $table->text('description')->nullable();
+            $table->text('logo')->nullable();
             $table->timestamps();
         });
     }

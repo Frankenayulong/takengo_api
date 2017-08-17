@@ -20,32 +20,27 @@ class CreateUsersTable extends Migration
             $table->string('email')->unique();
             $table->date('birth_date')->nullable();
             $table->string('gender', 1)->default('U');
-            $table->json('location_origin')->default(json_encode([
-                'address' => '',
-                'suburb' => '',
-                'state' => '',
-                'postcode' => ''
-            ]));
+            $table->text('address')->nullable();
+            $table->string('suburb')->nullable();
+            $table->string('state')->nullable();
+            $table->string('postcode')->nullable();
             $table->string('token')->default('');
             $table->string('password');
             // $table->string('fb_uid')->unique()->nullable();
-            $table->json('driver_license')->default(json_encode([
-                'picture' => '',
-                'number' => '',
-                'expiry_date' => '',
-                'country_issuer' => ''
-            ]));
+
+            $table->text('driver_license_picture')->nullable();
+            $table->string('driver_license_number')->nullable();
+            $table->date('driver_license_expiry_date')->nullable();
+            $table->string('driver_license_country_issuer')->nullable();
+
+
             $table->string('phone')->nullable();
-            $table->json('status')->default(json_encode([
-                'verified' => false,
-                'all_verified' => false,
-                'license' => false,
-                'address' => false
-            ]));
-            $table->json('metadata')->default(json_encode([
-                'notes' => json_encode([]),
-                'ips' => json_encode([])
-            ]));
+
+            $table->boolean('s_verified')->default(false);
+            $table->boolean('s_all_verified')->default(false);
+            $table->boolean('s_license')->default(false);
+            $table->boolean('s_address')->default(false);
+            $table->boolean('s_filled')->default(false);
             $table->string('vendor', 10)->default('takengo');
             $table->ipAddress('last_ip');
             $table->timestamps();

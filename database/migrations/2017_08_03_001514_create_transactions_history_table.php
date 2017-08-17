@@ -29,14 +29,16 @@ class CreateTransactionsHistoryTable extends Migration
             ->onDelete('set null');
 
             $table->double('amount');
-            $table->json('status')->default(json_encode([
-                'card' => '', //DECLINED / APPROVED
-                'type' => '' //SAVINGS / CREDIT / DEBIT
-            ]));
+            $table->text('card');
+            $table->text('card_type');
+            // $table->json('status')->default(json_encode([
+            //     'card' => '', //DECLINED / APPROVED
+            //     'type' => '' //SAVINGS / CREDIT / DEBIT
+            // ]));
 
-            $table->json('metadata')->default(json_encode([
-                'notes' => json_encode([])
-            ]));
+            // $table->json('metadata')->default(json_encode([
+            //     'notes' => json_encode([])
+            // ]));
 
             $table->timestamps();
         });
