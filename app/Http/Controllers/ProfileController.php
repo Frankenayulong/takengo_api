@@ -10,16 +10,15 @@ use App\Classes\Slim;
 class ProfileController extends Controller
 {
     public function update(Request $request){
-        return session('uid');
         $this->validate($request, [
-            'first_name' => 'required',
-            'last_name' => 'required',
+            'first_name' => 'required|min:2',
+            'last_name' => 'required|min:2',
             'gender' => 'required|in:M,F',
             'phone' => 'required|min:9|max:10',
             'birth_date' => 'nullable|date',
-            'address' => 'required',
-            'suburb' => 'required',
-            'state' => 'required',
+            'address' => 'required|min:8',
+            'suburb' => 'required|min:3',
+            'state' => 'required|min:2',
             'post_code' => 'nullable'
         ]);
 
@@ -38,9 +37,14 @@ class ProfileController extends Controller
         return response($customer);
     }
 
-    public function upload(Request $request, $uid){
-        // $uid = session('uid');
-        return session('uid');
+    public function hello(Request $request){
+        return $request->session()->exists('hello') ? 'true' : 'false';
+        return session('hello');
+    }
+
+    public function upload(Request $request){
+        $uid = session('uid');
+        return $uid;
         $customer = Customer::findOrFail($uid);
     
         if ( $request->picture )

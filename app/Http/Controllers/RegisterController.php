@@ -54,7 +54,7 @@ class RegisterController extends Controller
         $last_name = $request->input('last_name');
         $vendor = $request->input('vendor');
         $ip = request()->ip();
-        $callback = $request->input('callback', 'http://takengo.dev');
+        $callback = $request->input('callback', 'https://takengo.dev');
         $new_user = false;
 
         $customer = Customer::where('email', $email)->first();

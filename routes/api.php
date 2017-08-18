@@ -24,7 +24,8 @@ Route::group(['middleware' => 'api'], function () {
     Route::post('/reset_auth', 'LoginController@remove_cookie');
     Route::post('/profile', 'LoginController@get_profile')->middleware(['token']);
     Route::put('/profile/edit', 'ProfileController@update')->middleware(['token']);
-    Route::post('/user/document/upload/{uid}', 'ProfileController@upload');
+    Route::post('/user/document/upload', 'ProfileController@upload');
     Route::post('/login', 'LoginController@login');
     Route::post('/cars', 'CarController@show');
+    Route::get('/hello', 'ProfileController@hello');
 });

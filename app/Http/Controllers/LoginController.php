@@ -111,7 +111,7 @@ class LoginController extends Controller
         }
         $callback_url = $request->server('HTTP_REFERER');
         if(strlen($callback_url) <= 0){
-            $callback_url = 'http://takengo.dev';
+            $callback_url = 'https://takengo.dev';
         }
         session([
             'oauthprv'=> $provider,
@@ -138,7 +138,8 @@ class LoginController extends Controller
                 'last_name' => $last_name,
                 'vendor' => $provider,
                 'callback' => $callback
-            ]
+            ],
+            'verify' => false
         ]);
         $response = json_decode((string)$result->getBody());
         $cookie = $cookieJar->make('tng_token', $response->token, 2628000, '/', config('session.domain'), false, true);
