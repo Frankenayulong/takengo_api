@@ -33,11 +33,7 @@ class TokenMiddleware
         if(!$customer){
             return response()->json([
                 "status" => 'NOT OK',
-                "message" => "Invalid tokend",
-                "uid" => $customer->uid,
-                "email" => $customer->email,
-                "token" => $customer->token,
-                'first_name' => strlen($customer->first_name) > 0 ? $customer->first_name : 'My Profile'
+                "message" => "Invalid token"
             ]);
         }
         session([

@@ -9,6 +9,34 @@ use App\Classes\Slim;
 
 class ProfileController extends Controller
 {
+    public function get_profile(Request $request){
+        $uid = session('uid');
+        $customer = Customer::find($uid);
+        return response()->json([
+            'status' => 'OK',
+            'user' => $customer
+        ]);
+    }
+
+    public function show(Request $request){
+        $uid = $request->input('uid');
+        $token = $request->input('token');
+        $email = $request->input('email');
+
+        $customer = Customer::where('uid', $uid)->where('token', $token)->where('email', $email)->first();
+        if(!$customer){
+            return response()->json([
+                'status' => 'NOT OK',
+                'message' => 'No User Found'
+            ]);
+        }
+        return response()->json([
+            'status' => 'OK',
+            'message' => 'Customer found',
+            'customer' => $customer
+        ]);
+    }
+
     public function update(Request $request){
         $this->validate($request, [
             'first_name' => 'required',

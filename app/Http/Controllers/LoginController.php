@@ -103,15 +103,6 @@ class LoginController extends Controller
         ])
         ->cookie($cookie);
     }
-
-    public function get_profile(Request $request){
-        $uid = session('uid');
-        $customer = Customer::find($uid);
-        return response()->json([
-            'status' => 'OK',
-            'user' => $customer
-        ]);
-    }
     
     public function providerRedirect(Request $request, $provider){
         if($provider != 'google' && $provider != 'facebook'){
