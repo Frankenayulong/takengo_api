@@ -122,7 +122,7 @@ return [
     |
     */
 
-    'cookie' => 'takengosession',
+    'cookie' => 'takengoapisession',
 
     /*
     |--------------------------------------------------------------------------

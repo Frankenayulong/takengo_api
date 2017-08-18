@@ -23,7 +23,7 @@ class CreateUsersTable extends Migration
             $table->text('address')->nullable();
             $table->string('suburb')->nullable();
             $table->string('state')->nullable();
-            $table->string('postcode')->nullable();
+            $table->string('post_code')->nullable();
             $table->string('token')->default('');
             $table->string('password');
             // $table->string('fb_uid')->unique()->nullable();

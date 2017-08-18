@@ -11,14 +11,14 @@ class ProfileController extends Controller
 {
     public function update(Request $request){
         $this->validate($request, [
-            'first_name' => 'required|min:2',
-            'last_name' => 'required|min:2',
+            'first_name' => 'required',
+            'last_name' => 'required',
             'gender' => 'required|in:M,F',
             'phone' => 'required|min:9|max:10',
             'birth_date' => 'nullable|date',
-            'address' => 'required|min:8',
-            'suburb' => 'required|min:3',
-            'state' => 'required|min:2',
+            'address' => 'required',
+            'suburb' => 'required',
+            'state' => 'required',
             'post_code' => 'nullable'
         ]);
 
@@ -37,14 +37,9 @@ class ProfileController extends Controller
         return response($customer);
     }
 
-    public function hello(Request $request){
-        return $request->session()->exists('hello') ? 'true' : 'false';
-        return session('hello');
-    }
-
     public function upload(Request $request){
         $uid = session('uid');
-        return $uid;
+        
         $customer = Customer::findOrFail($uid);
     
         if ( $request->picture )
@@ -72,9 +67,9 @@ class ProfileController extends Controller
     
                 $customer->driver_license_picture = $file['name'];
                 $customer->save();
-                return[
-                  $request, $customer, $imagePath
-                ];
+                return response([
+                    $request, $customer, $imagePath
+                ]);
             }
         }
     }
