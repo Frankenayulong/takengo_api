@@ -11,20 +11,26 @@ class RegisterController extends Controller
 {
     public function register(Request $request){
         $this->validate($request, [
+            'first_name' => 'required',
+            'last_name' => 'required',
             'email' => 'required|unique:users|max:255',
             'password' => 'required|min:8|confirmed'
         ]);
+        $first_name = $request->input('first_name');
+        $last_name = $request->input('last_name');
         $email = $request->input('email');
         $password = $request->input('password');
         $ip = request()->ip();
         $customer_check = Customer::where('email', $email)->count();
         if($customer_check > 0){
-            return response([
+            return response()->json([
                 'status' => 'NOT OK',
                 'message' => 'User Already Exists'
             ]);
         }
         $customer = new Customer;
+        $customer->first_name = $first_name;
+        $customer->last_name = $last_name;
         $customer->token = str_random(16);
         $customer->email = $email;
         $customer->last_ip = $ip;
@@ -36,7 +42,7 @@ class RegisterController extends Controller
             "token"=>$customer->token,
             "email"=>$customer->email
         ]);
-        return response([
+        return response()->json([
             'status' => 'OK',
             'user' => $customer
         ])
@@ -54,7 +60,7 @@ class RegisterController extends Controller
         $last_name = $request->input('last_name');
         $vendor = $request->input('vendor');
         $ip = request()->ip();
-        $callback = $request->input('callback', 'http://takengo.dev');
+        $callback = $request->input('callback', 'https://takengo.dev');
         $new_user = false;
 
         $customer = Customer::where('email', $email)->first();
@@ -76,10 +82,10 @@ class RegisterController extends Controller
             "email"=>$customer->email
         ]);
         
-        return response([
+        return response()->json([
             'status' => 'OK',
             'new_user' => $new_user,
             'token' => $encryptedToken
-        ], 200);
+        ]);
     }
 }

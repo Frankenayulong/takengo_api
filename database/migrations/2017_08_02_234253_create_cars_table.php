@@ -35,9 +35,9 @@ class CreateCarsTable extends Migration
             $table->integer('doors')->unsigned()->default(0);
             $table->boolean('air_conditioned')->default(false);
             $table->boolean('unlimited_mileage')->default(false);
-            $table->double('limit_mileage')->default(0);
+            $table->double('limit_mileage')->unsigned()->default(0);
             $table->text('fuel_policy')->default('');
-            $table->double('price')->default(0);
+            $table->double('price')->unsigned()->default(0);
             $table->timestamps();
         });
     }

@@ -10,7 +10,6 @@ use App\Classes\Slim;
 class ProfileController extends Controller
 {
     public function update(Request $request){
-        return session('uid');
         $this->validate($request, [
             'first_name' => 'required',
             'last_name' => 'required',
@@ -38,9 +37,9 @@ class ProfileController extends Controller
         return response($customer);
     }
 
-    public function upload(Request $request, $uid){
-        // $uid = session('uid');
-        return session('uid');
+    public function upload(Request $request){
+        $uid = session('uid');
+        
         $customer = Customer::findOrFail($uid);
     
         if ( $request->picture )
@@ -68,9 +67,9 @@ class ProfileController extends Controller
     
                 $customer->driver_license_picture = $file['name'];
                 $customer->save();
-                return[
-                  $request, $customer, $imagePath
-                ];
+                return response([
+                    $request, $customer, $imagePath
+                ]);
             }
         }
     }

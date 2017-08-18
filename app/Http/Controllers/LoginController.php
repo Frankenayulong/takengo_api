@@ -15,20 +15,22 @@ class LoginController extends Controller
 {
     public function check_token(Request $request){
         if($request->cookie('tng_token') === null){
-            return response('nocookie', 200);
+            return response()->json([
+                'status' => 'nocookie'
+            ]);
         }
         try{
             $token_raw = decrypt($request->cookie('tng_token'));
             $token = (object)$token_raw;
             if(!property_exists($token, 'uid') || ! property_exists($token, 'token') || !property_exists($token, 'email')){
-                return response([
+                return response()->json([
                     "status" => 'NOT OK',
                     "message" => "Invalid token"
                 ]);
             }
             $customer = Customer::where('uid', $token->uid)->where('token', $token->token)->where('email', $token->email)->first();
             if(!$customer){
-                return response([
+                return response()->json([
                     "status" => 'NOT OK',
                     "message" => "Invalid token"
                 ]);
@@ -38,12 +40,16 @@ class LoginController extends Controller
                 'email' => $customer->email,
                 'token' => $customer->token
             ]);
-            return response([
+            return response()->json([
                 "status" => "OK",
-                "message" => "Token Authorized"
+                "message" => "Token Authorized",
+                "uid" => $customer->uid,
+                "email" => $customer->email,
+                "token" => $customer->token,
+                'first_name' => strlen($customer->first_name) > 0 ? $customer->first_name : 'My Profile'
             ]);
         }catch(DecryptException $e){
-            return response([
+            return response()->json([
                 "status" => 'NOT OK',
                 "message" => "Invalid token"
             ]);
@@ -61,13 +67,13 @@ class LoginController extends Controller
 
         $customer = Customer::where('email', $email)->first();
         if(!$customer){
-            return response([
+            return response()->json([
                 'status' => 'NOTOK',
                 'message' => 'Invalid Credentials'
             ]);
         }
         if(!Hash::check($password, $customer->makeVisible('password')->password)){
-            return response([
+            return response()->json([
                 'status' => 'NOTOK',
                 'message' => 'Invalid Credentials'
             ]);
@@ -82,7 +88,7 @@ class LoginController extends Controller
             "token"=>$customer->token,
             "email"=>$customer->email
         ]);
-        return response([
+        return response()->json([
             'status' => 'OK',
             'user' => $customer
         ])
@@ -92,17 +98,19 @@ class LoginController extends Controller
 
     public function remove_cookie(CookieJar $cookieJar, Request $request){
         $cookie = $cookieJar->forget('tng_token', '/', config('session.domain'));
-        return response("done", 200)
+        return response()->json([
+            "status" => 'done'
+        ])
         ->cookie($cookie);
     }
 
     public function get_profile(Request $request){
         $uid = session('uid');
         $customer = Customer::find($uid);
-        return response([
+        return response()->json([
             'status' => 'OK',
             'user' => $customer
-        ], 200);
+        ]);
     }
     
     public function providerRedirect(Request $request, $provider){
@@ -111,7 +119,7 @@ class LoginController extends Controller
         }
         $callback_url = $request->server('HTTP_REFERER');
         if(strlen($callback_url) <= 0){
-            $callback_url = 'http://takengo.dev';
+            $callback_url = 'https://takengo.dev';
         }
         session([
             'oauthprv'=> $provider,
@@ -138,7 +146,8 @@ class LoginController extends Controller
                 'last_name' => $last_name,
                 'vendor' => $provider,
                 'callback' => $callback
-            ]
+            ],
+            'verify' => false
         ]);
         $response = json_decode((string)$result->getBody());
         $cookie = $cookieJar->make('tng_token', $response->token, 2628000, '/', config('session.domain'), false, true);
