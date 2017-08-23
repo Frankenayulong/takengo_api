@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Car;
+use Exception;
 
 class CarController extends Controller
 {
@@ -22,5 +23,45 @@ class CarController extends Controller
         return $car;
         return [$car->toSql(), $car->getBindings()];
         return response($request->ip());
+    }
+
+    public function image(Request $request, $cid){
+        try{
+            $car = Car::with(['pictures' => function($q){
+                return $q->first();
+            }])->find($cid);
+            if(!$car){
+                throw new Exception;
+            }
+            if(count($car->pictures) <= 0){
+                $path = asset('/images/system_images/no-image-available.png');
+                $path_parts = pathinfo($path);
+                $file = @file_get_contents($path, true);
+                if($file === false){
+                    throw new Exception;
+                }
+                
+                return response($file, 200)->header('Content-Type', "image/".$path_parts["extension"]);
+            }
+            $path = asset('/images/cars/' . $cid . '/' . $car->pictures[0]->pic_name);
+            $path_parts = pathinfo($path);
+            if ($path_parts['extension'] == "css")
+            {
+                $mime = "text/css";
+            }else if($path_parts['extension'] == "svg"){
+                $mime = "image/svg+xml";
+            }else{
+                $mime = "image/".$path_parts['extension'];
+            }
+                    
+            $file = @file_get_contents($path , true);
+            if($file === false){
+                throw new Exception;
+            }
+            $response = response($file, 200)->header('Content-Type', $mime);
+            return $response;
+        }catch(Exception $e){
+            return "";
+        }
     }
 }

@@ -28,4 +28,6 @@ Route::group(['middleware' => 'api'], function () {
     Route::post('/login', 'LoginController@login');
     Route::get('/cars', 'CarController@show');
     Route::get('/hello', 'ProfileController@hello');
+
+    Route::get('/img/cars/{cid}', 'CarController@image');
 });

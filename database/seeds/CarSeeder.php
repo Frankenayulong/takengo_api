@@ -4,6 +4,7 @@ use Illuminate\Database\Seeder;
 use App\Car;
 use App\CarLocation;
 use App\CarBrand;
+use App\CarPicture;
 
 class CarSeeder extends Seeder
 {
@@ -320,5 +321,11 @@ class CarSeeder extends Seeder
         $carLocation10->long = 144.95764189;
         $carLocation10->car()->associate($car10);
         $carLocation10->save();
+
+        $carPicture1 = new CarPicture;
+        $carPicture1->car()->associate($car1);
+        $carPicture1->pic_name = 'm931k.jpg';
+        $carPicture1->format = 'jpg';
+        $carPicture1->save();
     }
 }

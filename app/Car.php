@@ -19,6 +19,10 @@ class Car extends Model
     	return $this->hasMany('App\CarLocation', 'cid', 'cid');
     }
 
+    public function pictures(){
+    	return $this->hasMany('App\CarPicture', 'cid', 'cid');
+    }
+
     public function last_location(){
         return $this->locations()->orderBy('created_at', 'desc')->first();
     }
