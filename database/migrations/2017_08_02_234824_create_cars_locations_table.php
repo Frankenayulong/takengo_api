@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
-
+use Illuminate\Support\Facades\DB;
 class CreateCarsLocationsTable extends Migration
 {
     /**
@@ -24,6 +24,11 @@ class CreateCarsLocationsTable extends Migration
             $table->double('long')->default(0);
             $table->timestamps();
         });
+
+        Schema::table('cars_locations', function(Blueprint $table){
+            $sql = "CREATE INDEX cars_locations_lat_lng_index on cars_locations USING gist(ll_to_earth(lat, long));";
+            DB::connection()->getPdo()->exec($sql);
+        });
     }
 
     /**
@@ -33,7 +38,9 @@ class CreateCarsLocationsTable extends Migration
      */
     public function down()
     {
-        Schema::disableForeignKeyConstraints(); 
+        Schema::disableForeignKeyConstraints();
+        $sql = "DROP INDEX cars_locations_lat_lng_index"; 
+        DB::connection()->getPdo()->exec($sql);
         Schema::dropIfExists('cars_locations');
         Schema::enableForeignKeyConstraints();
     }

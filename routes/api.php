@@ -26,6 +26,6 @@ Route::group(['middleware' => 'api'], function () {
     Route::put('/profile/edit', 'ProfileController@update')->middleware(['token']);
     Route::post('/user/document/upload', 'ProfileController@upload')->middleware(['token']);
     Route::post('/login', 'LoginController@login');
-    Route::post('/cars', 'CarController@show');
+    Route::get('/cars', 'CarController@show');
     Route::get('/hello', 'ProfileController@hello');
 });
