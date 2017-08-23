@@ -36,7 +36,7 @@ class Car extends Model
             $join->on('l1.created_at','<', 'l2.created_at');
        
         }, 'left outer')
-        ->selectRaw("earth_distance(ll_to_earth(l1.lat, l1.long), ll_to_earth(?, ?)) AS distance, cars.*", [$user_lat, $user_long])
+        ->selectRaw("earth_distance(ll_to_earth(l1.lat, l1.long), ll_to_earth(?, ?)) AS distance, cars.*, l1.lat, l1.long", [$user_lat, $user_long])
         ->where("l2.clid", null)
         ->whereRaw("earth_box(ll_to_earth(?, ?), ?) @> ll_to_earth(l1.lat, l1.long)", [$user_lat, $user_long, $radius]);
     }
