@@ -35,7 +35,7 @@ class CarController extends Controller
         ];  
         try{
             $car = Car::with(['pictures' => function($q){
-                return $q->first();
+                return $q->orderBy('priority', 'desc')->first();
             }])->find($cid);
             if(!$car || count($car->pictures) <= 0){
                 $path = asset('/images/system_images/no-image-available.png');
