@@ -23,6 +23,7 @@ class CreateCarsPicturesTable extends Migration
              $table->text('original_full_path')->nullable();
              $table->text('pic_name');
              $table->string('format');
+             $table->integer('priority')->default(0);
              $table->timestamps();
          });
      }

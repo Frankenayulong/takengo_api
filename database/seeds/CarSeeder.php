@@ -331,12 +331,14 @@ class CarSeeder extends Seeder
         $carPicture1->car()->associate($car1);
         $carPicture1->pic_name = 'm931k.jpg';
         $carPicture1->format = 'jpg';
+        $carPicture1->priority = 10; //Hey nad, kalo mau di tampilin di car collection page, bikin 10, kalo ngga bikin 0 aja ya :)
         $carPicture1->save();
 
         $carPicture10_1 = new CarPicture;
         $carPicture10_1->car()->associate($car10);
         $carPicture10_1->pic_name = 'toyotakluger1.png';
         $carPicture10_1->format = 'png';
+        $carPicture1->priority = 10;
         $carPicture10_1->save();
     }
 }
