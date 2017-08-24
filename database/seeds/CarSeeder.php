@@ -322,10 +322,21 @@ class CarSeeder extends Seeder
         $carLocation10->car()->associate($car10);
         $carLocation10->save();
 
+        /*For Nadya:
+        I know things been rough,
+        but it's ok..
+        Here's something to cheer you up :)
+        */
         $carPicture1 = new CarPicture;
         $carPicture1->car()->associate($car1);
         $carPicture1->pic_name = 'm931k.jpg';
         $carPicture1->format = 'jpg';
         $carPicture1->save();
+
+        $carPicture10_1 = new CarPicture;
+        $carPicture10_1->car()->associate($car10);
+        $carPicture10_1->pic_name = 'toyotakluger1.png';
+        $carPicture10_1->format = 'png';
+        $carPicture10_1->save();
     }
 }
