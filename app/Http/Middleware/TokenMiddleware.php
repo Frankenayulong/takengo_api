@@ -16,13 +16,10 @@ class TokenMiddleware
      */
     public function handle($request, Closure $next)
     {
-        $uid = '';
-        $token = '';
-        $email = '';
-        if(!$request->session()->exists('uid') || !$request->session()->exists('email') || !$request->session()->exists('token')){
+        if($request->header('X-TKNG-UID') != null && $request->header('X-TKNG-TKN') != null && $request->header('X-TKNG-EM') != null){
             $uid = $request->header('X-TKNG-UID');
             $token = $request->header('X-TKNG-TKN');
-            $email = $request->header('X-TKNG-EM');
+            $email = $request->header('X-TKNG-EM'); 
         }else{
             $uid = session('uid');
             $email = session('email');
@@ -36,6 +33,7 @@ class TokenMiddleware
                 "message" => "Invalid token"
             ]);
         }
+        $customer->makeVisible('token');
         session([
             'uid' => $customer->uid,
             'email' => $customer->email,

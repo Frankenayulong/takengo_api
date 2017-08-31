@@ -27,6 +27,7 @@ Route::group(['middleware' => 'api'], function () {
     Route::post('/user/document/upload', 'ProfileController@upload')->middleware(['token']);
     Route::post('/login', 'LoginController@login');
     Route::get('/cars', 'CarController@show');
+    Route::post('/cars/book/{cid}', 'BookingController@index')->middleware(['token']);;
     Route::get('/hello', 'ProfileController@hello');
 
     Route::get('/img/cars/{cid}', 'CarController@image');

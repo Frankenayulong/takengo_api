@@ -12,18 +12,60 @@ class CarController extends Controller
     public function show(Request $request){
         $latitude = $request->input('lat', null);
         $longitude = $request->input('long', null);
+        $car_type = $request->input('type', '');
+        $price_range = $request->input('price', '');
         $radius = $request->input('rad', 4000);
+        $sort = $request->input('sort', '');
+        $price_range = explode(' ', $price_range);
+        $price_min = -1;
+        $price_max = -1;
+        if(count($price_range) > 1){
+            $price_min = $price_range[0];
+            $price_max = $price_range[1];
+            if($price_max == 0){
+                $price_max = 9000000;
+            }
+        }
+        $sort = explode(' ', $sort);
+        $sort_by = '';
+        $sort_dir = 'asc';
+        if(count($sort) > 1){
+            $sort_by = $sort[0];
+            if($sort[1] == 'asc'){
+                $sort_dir = 'asc';
+            }else{
+                $sort_dir = 'desc';
+            }
+        }
         $car = null;
         if($latitude == null || $longitude == null){
-            $car = Car::with('brand')->paginate(10);
+            $car = Car::with('brand');
         }else{
-            $car = Car::get_by_radius($latitude, $longitude, $radius)
-            ->orderBy('distance')
-            ->paginate(10);
+            $car = Car::get_by_radius($latitude, $longitude, $radius);
         }
+        if(strlen($car_type) > 0){
+            $car->where('car_types', $car_type);
+        }
+        if($price_min !== -1 && $price_max !== -1){
+            $car->where(function($q) use ($car, $price_min, $price_max){
+                $car
+                ->where('price', '>=', $price_min)
+                ->where('price', '<=', $price_max);
+            });
+            
+        }
+        if(strlen($sort_by) > 0){
+            $car->orderBy($sort_by, $sort_dir);
+        }else{
+            if($latitude !== null && $longitude !== null){
+                $car->orderBy('distance');
+            }else{
+                $car->orderBy('name');
+            }
+        }
+        $car = $car->paginate(10);
+        
         return $car;
-        return [$car->toSql(), $car->getBindings()];
-        return response($request->ip());
     }
 
     public function image(Request $request, $cid){

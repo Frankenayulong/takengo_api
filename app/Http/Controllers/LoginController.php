@@ -14,46 +14,44 @@ use Illuminate\Support\Facades\Hash;
 class LoginController extends Controller
 {
     public function check_token(Request $request){
-        if($request->cookie('tng_token') === null){
-            return response()->json([
-                'status' => 'nocookie'
-            ]);
+        $uid = $request->header('X-TKNG-UID');
+        $token = $request->header('X-TKNG-TKN');
+        $email = $request->header('X-TKNG-EM'); 
+        if($request->cookie('tng_token') !== null){
+            try{
+                $token_raw = decrypt($request->cookie('tng_token'));
+                $tokenong = (object)$token_raw;
+                $uid = $tokenong->uid;
+                $token = $tokenong->token;
+                $email = $tokenong->email;
+            }catch(DecryptException $e){
+                return response()->json([
+                    "status" => 'NOT OK',
+                    "message" => "Invalid token"
+                ]);
+            }
         }
-        try{
-            $token_raw = decrypt($request->cookie('tng_token'));
-            $token = (object)$token_raw;
-            if(!property_exists($token, 'uid') || ! property_exists($token, 'token') || !property_exists($token, 'email')){
-                return response()->json([
-                    "status" => 'NOT OK',
-                    "message" => "Invalid token"
-                ]);
-            }
-            $customer = Customer::where('uid', $token->uid)->where('token', $token->token)->where('email', $token->email)->first();
-            if(!$customer){
-                return response()->json([
-                    "status" => 'NOT OK',
-                    "message" => "Invalid token"
-                ]);
-            }
-            session([
-                'uid' => $customer->uid,
-                'email' => $customer->email,
-                'token' => $customer->token
-            ]);
-            return response()->json([
-                "status" => "OK",
-                "message" => "Token Authorized",
-                "uid" => $customer->uid,
-                "email" => $customer->email,
-                "token" => $customer->token,
-                'first_name' => strlen($customer->first_name) > 0 ? $customer->first_name : 'My Profile'
-            ]);
-        }catch(DecryptException $e){
+        $customer = Customer::where('uid', $uid)->where('token', $token)->where('email', $email)->first();
+        if(!$customer){
             return response()->json([
                 "status" => 'NOT OK',
                 "message" => "Invalid token"
             ]);
         }
+        $customer->makeVisible('token');
+        session([
+            'uid' => $customer->uid,
+            'email' => $customer->email,
+            'token' => $customer->token
+        ]);
+        return response()->json([
+            "status" => "OK",
+            "message" => "Token Authorized",
+            "uid" => $customer->uid,
+            "email" => $customer->email,
+            "token" => $customer->token,
+            'first_name' => strlen($customer->first_name) > 0 ? $customer->first_name : 'My Profile'
+        ]);
     }
 
     public function login(Request $request){
@@ -82,7 +80,6 @@ class LoginController extends Controller
         $customer->token = str_random(16);
         $customer->last_ip = $ip;
         $customer->save();
-
         $encryptedToken = encrypt([
             "uid"=>$customer->uid, 
             "token"=>$customer->token,
@@ -90,7 +87,9 @@ class LoginController extends Controller
         ]);
         return response()->json([
             'status' => 'OK',
-            'user' => $customer
+            'uid' => $customer->uid,
+            'email' => $customer->email,
+            'token' => $customer->token
         ])
         ->header('Content-Type', 'application/json')
         ->cookie('tng_token', $encryptedToken, 2628000, '/', config('session.domain'), false, true);
@@ -98,6 +97,15 @@ class LoginController extends Controller
 
     public function remove_cookie(CookieJar $cookieJar, Request $request){
         $cookie = $cookieJar->forget('tng_token', '/', config('session.domain'));
+        $user = Customer::find(session('uid'));
+        if($user){
+            $user->token = str_random(16);
+            $user->save();
+        }
+        
+        $request->session()->forget('uid');
+        $request->session()->forget('email');
+        $request->session()->forget('token');
         return response()->json([
             "status" => 'done'
         ])
