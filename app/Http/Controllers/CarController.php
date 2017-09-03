@@ -68,6 +68,67 @@ class CarController extends Controller
         return $car;
     }
 
+    public function detail(Request $request, $cid){
+        $latitude = $request->input('lat', null);
+        $longitude = $request->input('long', null);
+        if($latitude == null || $longitude == null){
+            $car = Car::with('brand');
+        }else{
+            $car = Car::distance($latitude, $longitude)->with('brand');
+        }
+        $car = $car->with(['pictures' => function($q){
+            return $q->orderBy('priority', 'desc')->get();
+        }, 'last_location'])->find($cid);
+        if(!$car){
+            return [
+                "status" => "NOT OK",
+                "message" => "Car not found"
+            ];
+        }
+        return [
+            "status" => 'OK',
+            'car' => $car
+        ];
+    }
+
+    public function image_by_name(Request $request, $cid, $name){
+        $arrContextOptions=[
+            "ssl"=>[
+                "verify_peer"=>false,
+                "verify_peer_name"=>false,
+            ],
+        ];  
+        try{
+            $car = Car::find($cid);
+            if(!$car){
+                throw new Exception;
+            }
+            $path = asset('/images/cars/' . $cid . '/' . $name);
+            $path_parts = pathinfo($path);
+            if ($path_parts['extension'] == "css")
+            {
+                $mime = "text/css";
+            }else if($path_parts['extension'] == "svg"){
+                $mime = "image/svg+xml";
+            }else{
+                $mime = "image/".$path_parts['extension'];
+            }
+                    
+            $file = @file_get_contents($path , true, stream_context_create($arrContextOptions));
+            if($file === false){
+                throw new Exception;
+            }
+            $response = response($file, 200)->header('Content-Type', $mime);
+            return $response;   
+        }catch(Exception $e){
+            $path = asset('/images/system_images/no-image-available.png');
+            $path_parts = pathinfo($path);
+            $file = file_get_contents($path, true, stream_context_create($arrContextOptions));
+            
+            return response($file, 200)->header('Content-Type', "image/".$path_parts["extension"]);
+        }
+    }
+
     public function image(Request $request, $cid){
         $arrContextOptions=[
             "ssl"=>[

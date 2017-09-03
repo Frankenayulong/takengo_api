@@ -17,18 +17,18 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::group(['middleware' => 'api'], function () {
-    Route::post('/register', 'RegisterController@register');
-    Route::post('/register/vendor', 'RegisterController@vendor')->name('vendor.register');
-    Route::post('/token', 'LoginController@check_token');
-    Route::post('/reset_auth', 'LoginController@remove_cookie');
-    Route::post('/profile', 'ProfileController@get_profile')->middleware(['token']);
-    Route::put('/profile/edit', 'ProfileController@update')->middleware(['token']);
-    Route::post('/user/document/upload', 'ProfileController@upload')->middleware(['token']);
-    Route::post('/login', 'LoginController@login');
-    Route::get('/cars', 'CarController@show');
-    Route::post('/cars/book/{cid}', 'BookingController@index')->middleware(['token']);;
-    Route::get('/hello', 'ProfileController@hello');
+Route::post('/register', 'RegisterController@register');
+Route::post('/register/vendor', 'RegisterController@vendor')->name('vendor.register');
+Route::post('/token', 'LoginController@check_token');
+Route::post('/reset_auth', 'LoginController@remove_cookie');
+Route::post('/profile', 'ProfileController@get_profile')->middleware(['token']);
+Route::put('/profile/edit', 'ProfileController@update')->middleware(['token']);
+Route::post('/user/document/upload', 'ProfileController@upload')->middleware(['token']);
+Route::post('/login', 'LoginController@login');
+Route::get('/cars', 'CarController@show');
+Route::get('/cars/{cid}', 'CarController@detail');
+Route::post('/cars/book/{cid}', 'BookingController@index')->middleware(['token']);;
+Route::get('/hello', 'ProfileController@hello');
 
-    Route::get('/img/cars/{cid}', 'CarController@image');
-});
+Route::get('/img/cars/{cid}', 'CarController@image');
+Route::get('/img/cars/{cid}/{name}', 'CarController@image_by_name');
