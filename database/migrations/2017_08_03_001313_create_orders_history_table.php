@@ -28,6 +28,15 @@ class CreateOrdersHistoryTable extends Migration
             ->on('users')
             ->onDelete('cascade');
 
+            $table->date('start_date');
+            $table->date('end_date');
+
+            $table->double('user_lat')->default(0);
+            $table->double('user_long')->default(0);
+
+            $table->double('car_lat')->default(0);
+            $table->double('car_long')->default(0);
+
             // $table->json('metadata')->default(json_encode([
             //     'notes' => json_encode([]),
             //     'locations' => json_encode([
