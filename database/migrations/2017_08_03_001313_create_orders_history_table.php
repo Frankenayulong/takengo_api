@@ -31,11 +31,13 @@ class CreateOrdersHistoryTable extends Migration
             $table->date('start_date');
             $table->date('end_date');
 
-            $table->double('user_lat')->default(0);
-            $table->double('user_long')->default(0);
+            $table->double('user_lat')->nullable();
+            $table->double('user_long')->nullable();
 
-            $table->double('car_lat')->default(0);
-            $table->double('car_long')->default(0);
+            $table->double('car_lat')->nullable();
+            $table->double('car_long')->nullable();
+
+            $table->boolean('active')->default(true);
 
             // $table->json('metadata')->default(json_encode([
             //     'notes' => json_encode([]),
