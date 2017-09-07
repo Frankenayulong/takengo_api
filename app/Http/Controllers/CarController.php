@@ -14,7 +14,8 @@ class CarController extends Controller
         $longitude = $request->input('long', null);
         $car_type = $request->input('type', '');
         $price_range = $request->input('price', '');
-        $radius = $request->input('rad', 4000);
+        $radius = $request->input('rad', 10);
+        $radius *= 1000;
         $sort = $request->input('sort', '');
         $price_range = explode(' ', $price_range);
         $price_min = -1;

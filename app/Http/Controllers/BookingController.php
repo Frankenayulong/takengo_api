@@ -85,4 +85,17 @@ class BookingController extends Controller
         ];
 
     }
+
+    public function history(Request $request){
+        $uid = session('uid');
+        $bookings = CarBooking::with('car')->where('uid', $uid)
+        // ->where('active', true)
+        ->orderBy('start_date', 'DESC')
+        ->get();
+        return [
+            'status' => 'OK',
+            'message' => 'Booking history retrieved',
+            'bookings' => $bookings
+        ];
+    }
 }
