@@ -18,4 +18,8 @@ class CarBooking extends Model
     public function customer(){
         return $this->belongsTo('App\Customer', 'uid', 'uid');
     }
+
+    public function transactions(){
+        return $this->hasMany('App\CarTransaction', 'ohid', 'ohid');
+    }
 }

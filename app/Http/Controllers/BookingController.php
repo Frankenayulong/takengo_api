@@ -88,10 +88,21 @@ class BookingController extends Controller
 
     public function history(Request $request){
         $uid = session('uid');
-        $bookings = CarBooking::with('car')->where('uid', $uid)
+        $bookings = CarBooking::with('car')->withCount('transactions')->where('uid', $uid)
         // ->where('active', true)
         ->orderBy('start_date', 'DESC')
-        ->get();
+        ->paginate(5);
+        foreach($bookings as $booking){
+            $end = strtotime($booking->end_date); // or your date as well
+            $start = strtotime($booking->start_date);
+            $datediff = $end - $start;
+            
+            $day = floor($datediff / (60 * 60 * 24));
+            if($day <= 0){
+                $day = 1;
+            }
+            $booking->days = $day;
+        }
         return [
             'status' => 'OK',
             'message' => 'Booking history retrieved',
