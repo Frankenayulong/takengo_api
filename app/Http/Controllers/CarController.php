@@ -145,11 +145,6 @@ class CarController extends Controller
                 $path = asset('/images/system_images/no-image-available.png');
                 $path_parts = pathinfo($path);
                 $file = file_get_contents($path, true, stream_context_create($arrContextOptions));
-                // return [$file];
-                // if($file === false){
-                //     throw new Exception;
-                // }
-                
                 return response($file, 200)->header('Content-Type', "image/".$path_parts["extension"]);
             }
             $path = asset('/images/cars/' . $cid . '/' . $car->pictures[0]->pic_name);
@@ -170,7 +165,10 @@ class CarController extends Controller
             $response = response($file, 200)->header('Content-Type', $mime);
             return $response;   
         }catch(Exception $e){
-            return "whoops";
+            $path = asset('/images/system_images/no-image-available.png');
+            $path_parts = pathinfo($path);
+            $file = file_get_contents($path, true, stream_context_create($arrContextOptions));
+            return response($file, 200)->header('Content-Type', "image/".$path_parts["extension"]);
         }
     }
 }

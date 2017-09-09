@@ -16,3 +16,4 @@ Route::get('/', function () {
 });
 Route::get('/auth/redirect/{provider}', 'LoginController@providerRedirect');
 Route::get('/auth/callback', 'LoginController@providerCallback');
+Route::get('/driverlicense/{uid}', 'ProfileController@driver_license');

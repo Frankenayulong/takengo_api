@@ -37,6 +37,22 @@ class ProfileController extends Controller
         ]);
     }
 
+    public function driver_license_update(Request $request){
+        $this->validate($request, [
+            'number' => 'required',
+            'exp_date' => 'required|date',
+            'country_issuer' => 'nullable'
+        ]);
+
+        $uid = session('uid');
+        $customer = Customer::find($uid);
+        $customer->driver_license_number = $request->number;
+        $customer->driver_license_expiry_date = $request->exp_date;
+        $customer->driver_license_country_issuer = $request->country_issuer;
+        $customer->save();
+        return response($customer);
+    }
+
     public function update(Request $request){
         $this->validate($request, [
             'first_name' => 'required',
@@ -63,6 +79,48 @@ class ProfileController extends Controller
         $customer->post_code = $request->post_code;
         $customer->save();        
         return response($customer);
+    }
+
+    public function driver_license(Request $request, $uid){
+        $arrContextOptions=[
+            "ssl"=>[
+                "verify_peer"=>false,
+                "verify_peer_name"=>false,
+            ],
+        ];  
+        try{
+            $user = Customer::find($uid);
+            if(!$user){
+                $path = asset('/images/system_images/no-image-available.png');
+                $path_parts = pathinfo($path);
+                $file = file_get_contents($path, true, stream_context_create($arrContextOptions));
+                return response($file, 200)->header('Content-Type', "image/".$path_parts["extension"]);
+            }
+            $path = asset('/images/user/' . $uid . '/documents' . '/' . $user->driver_license_picture);
+            $path_parts = pathinfo($path);
+            if ($path_parts['extension'] == "css")
+            {
+                $mime = "text/css";
+            }else if($path_parts['extension'] == "svg"){
+                $mime = "image/svg+xml";
+            }else if($path_parts['extension'] == 'jpg'){
+                $mime = 'image/jpeg';
+            }else{
+                $mime = "image/".$path_parts['extension'];
+            }
+                    
+            $file = @file_get_contents($path , true, stream_context_create($arrContextOptions));
+            if($file === false){
+                throw new Exception;
+            }
+            $response = response($file, 200)->header('Content-Type', $mime);
+            return $response;   
+        }catch(Exception $e){
+            $path = asset('/images/system_images/no-image-available.png');
+            $path_parts = pathinfo($path);
+            $file = file_get_contents($path, true, stream_context_create($arrContextOptions));
+            return response($file, 200)->header('Content-Type', "image/".$path_parts["extension"]);
+        }
     }
 
     public function upload(Request $request){
