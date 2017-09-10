@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Car;
 use App\Customer;
 use App\CarBooking;
+use App\CarTransaction;
 use Carbon\Carbon;
 class BookingController extends Controller
 {
@@ -66,6 +67,7 @@ class BookingController extends Controller
 
         $booking = new CarBooking;
         $booking->car()->associate($car);
+        $booking->car_price = $car->price;
         $booking->customer()->associate($customer);
         if($latitude != null && $longitude != null){
             $booking->user_lat = $latitude;
@@ -108,5 +110,40 @@ class BookingController extends Controller
             'message' => 'Booking history retrieved',
             'bookings' => $bookings
         ];
+    }
+
+    public function pay(Request $request, $ohid){
+        $booking = CarBooking::with('car')->withCount('transactions')->find($ohid);
+        if(!$booking || !$booking->active || $booking->transactions_count > 0 || $booking->uid != session('uid')){
+            return [
+                'status' => 'NOT OK',
+                'message' => 'cannot pay booking'
+            ];
+        }
+        $end = Carbon::parse($booking->end_date);
+        $start = Carbon::parse($booking->start_date);
+        $days = $end->diffInDays($start);
+        $transaction = new CarTransaction;
+        $transaction->booking()->associate($booking);
+        $transaction->amount = $days * $booking->car_price;
+        $transaction->card = 'AUTO';
+        $transaction->card_type = 'SYSTEM';
+        $transaction->save();
+        return [
+            'status' => 'OK',
+            'message' => 'booking paid'
+        ];
+    }
+
+    public function cancel(Request $request, $ohid){
+        $booking = CarBooking::with('car')->withCount('transactions')->find($ohid);
+        if(!$booking || !$booking->active || $booking->transactions_count > 0 || $booking->uid != session('uid')){
+            return [
+                'status' => 'NOT OK',
+                'message' => 'cannot pay booking'
+            ];
+        }
+        $booking->active = false;
+        $booking->save();
     }
 }

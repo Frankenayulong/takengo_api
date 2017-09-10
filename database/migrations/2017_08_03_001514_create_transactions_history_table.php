@@ -27,7 +27,7 @@ class CreateTransactionsHistoryTable extends Migration
             ->references('ucid')
             ->on('users_cards')
             ->onDelete('set null');
-
+            
             $table->double('amount');
             $table->text('card');
             $table->text('card_type');

@@ -28,9 +28,11 @@ Route::post('/user/document/upload', 'ProfileController@upload')->middleware(['t
 Route::post('/login', 'LoginController@login');
 Route::get('/cars', 'CarController@show');
 Route::get('/cars/{cid}', 'CarController@detail');
-Route::post('/cars/book/{cid}', 'BookingController@index')->middleware(['token']);
+Route::post('/cars/{cid}/book', 'BookingController@index')->middleware(['token']);
 Route::post('/book', 'BookingController@book')->middleware(['token']);
 Route::post('/book/history', 'BookingController@history')->middleware(['token']);
+Route::post('/booking/{ohid}/pay', 'BookingController@pay')->middleware(['token']);
+Route::post('/booking/{ohid}/cancel', 'BookingController@cancel')->middleware(['token']);
 Route::get('/hello', 'ProfileController@hello');
 
 Route::get('/img/cars/{cid}', 'CarController@image');
