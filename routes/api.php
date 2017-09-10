@@ -34,6 +34,8 @@ Route::post('/book/history', 'BookingController@history')->middleware(['token'])
 Route::post('/booking/{ohid}/pay', 'BookingController@pay')->middleware(['token']);
 Route::post('/booking/{ohid}/cancel', 'BookingController@cancel')->middleware(['token']);
 Route::get('/hello', 'ProfileController@hello');
+Route::post('/contact-us', 'ContactUsController@create');
+Route::post('/register-newsletter', 'NewsletterController@register');
 
 Route::get('/img/cars/{cid}', 'CarController@image');
 Route::get('/img/cars/{cid}/{name}', 'CarController@image_by_name');

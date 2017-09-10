@@ -16,16 +16,10 @@ class CreateContactUsTable extends Migration
         Schema::create('contact_us', function (Blueprint $table) {
             $table->increments('cuid');
 
-            $table->text('subject');
-            $table->longText('content');
-
-            $table->integer('uid')->unsigned()->nullable();
-            $table->foreign('uid')
-            ->references('uid')
-            ->on('users')
-            ->onDelete('set null');
-
+            $table->text('name');
             $table->string('email');
+            $table->string('phone');
+            $table->longText('content');
 
             // $table->json('status')->default(json_encode([
             //     'notes' => json_encode([])
