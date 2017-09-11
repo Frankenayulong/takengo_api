@@ -42,3 +42,7 @@ Route::get('/img/cars/{cid}/{name}', 'CarController@image_by_name');
 
 Route::post('/admin/cars', 'Admin\CarController@show');
 Route::post('/admin/orders', 'Admin\OrderController@show');
+Route::post('/admin/messages', 'Admin\ContactUsController@show');
+Route::post('/admin/newsletter-emails', 'Admin\ContactUsController@show');
+Route::post('/admin/users', 'Admin\UserController@show');
+Route::post('/admin/admins', 'Admin\AdminController@show');

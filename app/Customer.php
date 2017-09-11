@@ -19,4 +19,8 @@ class Customer extends Model
     public $timestamps = true;
     protected $primaryKey = 'uid';
     public $incrementing = true;
+
+    public function bookings(){
+        return $this->hasMany('App\CarBooking', 'uid', 'uid');
+    }
 }

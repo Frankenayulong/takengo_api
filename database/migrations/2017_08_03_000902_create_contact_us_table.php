@@ -20,6 +20,7 @@ class CreateContactUsTable extends Migration
             $table->string('email');
             $table->string('phone');
             $table->longText('content');
+            $table->boolean('resolved')->default(false);
 
             // $table->json('status')->default(json_encode([
             //     'notes' => json_encode([])
