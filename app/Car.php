@@ -27,6 +27,10 @@ class Car extends Model
         return $this->locations()->orderBy('created_at', 'desc')->take(1);
     }
 
+    public function orders(){
+        return $this->hasMany('App\CarBooking', 'cid', 'cid');
+    }
+
     public static function get_by_radius($user_lat, $user_long, $radius){
         return Car::with('brand')
         ->join('cars_locations as l1', 'cars.cid', '=', 'l1.cid')

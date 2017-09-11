@@ -39,3 +39,6 @@ Route::post('/register-newsletter', 'NewsletterController@register');
 
 Route::get('/img/cars/{cid}', 'CarController@image');
 Route::get('/img/cars/{cid}/{name}', 'CarController@image_by_name');
+
+Route::post('/admin/cars', 'Admin\CarController@show');
+Route::post('/admin/orders', 'Admin\OrderController@show');
