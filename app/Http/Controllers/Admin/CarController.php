@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use App\Car;
+use App\CarBrand;
 class CarController extends Controller
 {
     public function show(Request $request){
@@ -18,5 +19,10 @@ class CarController extends Controller
         ->orderBy('inactive_order_count', 'desc')
         ->paginate(10);
         return $car;
+    }
+
+    public function brands(Request $request){
+        $brands = CarBrand::get();
+        return $brands;
     }
 }
