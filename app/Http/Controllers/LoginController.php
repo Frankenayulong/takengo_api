@@ -50,7 +50,8 @@ class LoginController extends Controller
             "uid" => $customer->uid,
             "email" => $customer->email,
             "token" => $customer->token,
-            'first_name' => strlen($customer->first_name) > 0 ? $customer->first_name : 'My Profile'
+            'first_name' => strlen($customer->first_name) > 0 ? $customer->first_name : 'My Profile',
+            "orders" => $customer->orders 
         ]);
     }
 

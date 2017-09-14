@@ -11,7 +11,9 @@ class ProfileController extends Controller
 {
     public function get_profile(Request $request){
         $uid = session('uid');
-        $customer = Customer::find($uid);
+        $customer = Customer::with(['bookings' => function($q){
+            return $q->where('active', true)->orderBy('created_at', 'desc')->take(1);
+        }])->find($uid);
         return response()->json([
             'status' => 'OK',
             'user' => $customer

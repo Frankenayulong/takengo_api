@@ -32,7 +32,10 @@ class Car extends Model
     }
 
     public static function get_by_radius($user_lat, $user_long, $radius){
-        return Car::with('brand')
+        return Car::with(['brand'])
+        ->withCount(['orders as active_order' => function($q){
+            return $q->where('active', true);
+        }])
         ->join('cars_locations as l1', 'cars.cid', '=', 'l1.cid')
         ->leftJoin('cars_locations as l2', function($join)
         {

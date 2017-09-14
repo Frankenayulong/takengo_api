@@ -41,7 +41,10 @@ Route::get('/img/cars/{cid}', 'CarController@image');
 Route::get('/img/cars/{cid}/{name}', 'CarController@image_by_name');
 
 Route::post('/admin/cars', 'Admin\CarController@show');
+Route::post('/admin/cars/{cid}/picture/upload', 'Admin\CarController@upload');
 Route::post('/admin/brands', 'Admin\CarController@brands');
+Route::post('/admin/cars/create', 'Admin\CarController@create');
+Route::post('/admin/cars/show/{cid}', 'Admin\CarController@single');
 Route::post('/admin/orders', 'Admin\OrderController@show');
 Route::post('/admin/messages', 'Admin\ContactUsController@show');
 Route::post('/admin/newsletter-emails', 'Admin\ContactUsController@show');

@@ -40,7 +40,9 @@ class CarController extends Controller
         }
         $car = null;
         if($latitude == null || $longitude == null){
-            $car = Car::with('brand');
+            $car = Car::with('brand')->withCount(['orders as active_order' => function($q){
+                return $q->where('active', true);
+            }]);
         }else{
             $car = Car::get_by_radius($latitude, $longitude, $radius);
         }
@@ -65,7 +67,13 @@ class CarController extends Controller
             }
         }
         $car = $car->paginate(10);
-        
+        $car->setCollection(
+            $car->getCollection()
+                ->filter(function($item, $key)
+                {
+                    return $item->active_order_count <= 0;
+                })->values()
+        );
         return $car;
     }
 

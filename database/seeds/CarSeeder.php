@@ -504,7 +504,7 @@ class CarSeeder extends Seeder
 
         $carPicture1_3 = new CarPicture;
         $carPicture1_3->car()->associate($car1);
-        $carPicture1_3->pic_name = 'FiatPunto3.png';
+        $carPicture1_3->pic_name = 'FiatPunto3.jpg';
         $carPicture1_3->format = 'png';
         $carPicture1_3->priority = 0;
         $carPicture1_3->save();

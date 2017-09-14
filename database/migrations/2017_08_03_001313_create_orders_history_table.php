@@ -28,8 +28,8 @@ class CreateOrdersHistoryTable extends Migration
             ->on('users')
             ->onDelete('cascade');
 
-            $table->date('start_date');
-            $table->date('end_date');
+            $table->timestamp('start_date');
+            $table->timestamp('end_date');
 
             $table->double('car_price');
 

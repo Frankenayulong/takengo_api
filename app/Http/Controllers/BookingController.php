@@ -30,6 +30,8 @@ class BookingController extends Controller
         $bookings = CarBooking::where('cid', $cid)
         ->where('end_date', '>', Carbon::now())
         ->where('active', true)
+        ->orderBy('active', 'desc')
+        ->orderBy('start_date', 'desc')
         ->get();
 
         return [
@@ -77,8 +79,8 @@ class BookingController extends Controller
             $booking->car_lat = $car->last_location[0]->lat;
             $booking->car_long = $car->last_location[0]->long;
         }
-        $booking->start_date = $start_date;
-        $booking->end_date = $end_date;
+        $booking->start_date = Carbon::now();
+        $booking->end_date = Carbon::now();
         $booking->save();
         return [
             'status' => 'OK',
@@ -92,19 +94,9 @@ class BookingController extends Controller
         $uid = session('uid');
         $bookings = CarBooking::with('car')->withCount('transactions')->where('uid', $uid)
         // ->where('active', true)
+        ->orderBy('active', 'desc')
         ->orderBy('start_date', 'DESC')
         ->paginate(5);
-        foreach($bookings as $booking){
-            $end = strtotime($booking->end_date); // or your date as well
-            $start = strtotime($booking->start_date);
-            $datediff = $end - $start;
-            
-            $day = floor($datediff / (60 * 60 * 24));
-            if($day <= 0){
-                $day = 1;
-            }
-            $booking->days = $day;
-        }
         return [
             'status' => 'OK',
             'message' => 'Booking history retrieved',
@@ -143,6 +135,7 @@ class BookingController extends Controller
                 'message' => 'cannot pay booking'
             ];
         }
+        $booking->end_date = Carbon::now();
         $booking->active = false;
         $booking->save();
     }
