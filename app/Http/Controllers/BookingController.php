@@ -9,6 +9,7 @@ use App\CarBooking;
 use App\CarTransaction;
 use App\CarLocation;
 use Carbon\Carbon;
+use DB;
 class BookingController extends Controller
 {
     public function index(Request $request, $cid){
@@ -142,16 +143,20 @@ class BookingController extends Controller
                 'message' => 'cannot pay booking'
             ];
         }
-        $booking->end_date = Carbon::now();
-        $booking->active = false;
-        $booking->save();
-        if($latitude != null && $longitude != null){
-            $loc = new CarLocation;
-            $loc->car()->associate($car);
-            $loc->lat = $latitude;
-            $loc->long = $longitude;
-            $loc->save();
-        }
+        DB::transaction(function () use($booking, $latitude, $longitude) {
+            $booking->end_date = Carbon::now();
+            $booking->active = false;
+            $booking->save();
+            if($latitude != null && $longitude != null){
+                $car = $booking->car;
+                $loc = new CarLocation;
+                $loc->car()->associate($car);
+                $loc->lat = $latitude;
+                $loc->long = $longitude;
+                $loc->save();
+            }
+        });
+        
         return [
             'status' => 'OK'
         ];
