@@ -7,6 +7,7 @@ use App\Car;
 use App\Customer;
 use App\CarBooking;
 use App\CarTransaction;
+use App\CarLocation;
 use Carbon\Carbon;
 class BookingController extends Controller
 {
@@ -28,7 +29,6 @@ class BookingController extends Controller
             ];
         }
         $bookings = CarBooking::where('cid', $cid)
-        ->where('end_date', '>', Carbon::now())
         ->where('active', true)
         ->orderBy('active', 'desc')
         ->orderBy('start_date', 'desc')
@@ -66,7 +66,12 @@ class BookingController extends Controller
         }
         $customer = Customer::find($uid);
         $car = Car::with('last_location')->find($cid);
-
+        if(!$car){
+            return [
+                "status" => 'NOT OK',
+                'message' => 'car not found'
+            ];
+        }
         $booking = new CarBooking;
         $booking->car()->associate($car);
         $booking->car_price = $car->price;
@@ -128,6 +133,8 @@ class BookingController extends Controller
     }
 
     public function cancel(Request $request, $ohid){
+        $latitude = $request->input('latitude', null);
+        $longitude = $request->input('longitude', null);
         $booking = CarBooking::with('car')->withCount('transactions')->find($ohid);
         if(!$booking || !$booking->active || $booking->transactions_count > 0 || $booking->uid != session('uid')){
             return [
@@ -138,5 +145,15 @@ class BookingController extends Controller
         $booking->end_date = Carbon::now();
         $booking->active = false;
         $booking->save();
+        if($latitude != null && $longitude != null){
+            $loc = new CarLocation;
+            $loc->car()->associate($car);
+            $loc->lat = $latitude;
+            $loc->long = $longitude;
+            $loc->save();
+        }
+        return [
+            'status' => 'OK'
+        ];
     }
 }
