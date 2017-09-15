@@ -52,7 +52,7 @@ class ProfileController extends Controller
         $customer->driver_license_expiry_date = $request->exp_date;
         $customer->driver_license_country_issuer = $request->country_issuer;
         $customer->save();
-        return response($customer);
+        return response()->json($customer);
     }
 
     public function update(Request $request){
@@ -80,7 +80,7 @@ class ProfileController extends Controller
         $customer->state = $request->state;
         $customer->post_code = $request->post_code;
         $customer->save();        
-        return response($customer);
+        return response()->json($customer);
     }
 
     public function driver_license(Request $request, $uid){

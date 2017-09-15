@@ -35,12 +35,12 @@ class BookingController extends Controller
         ->orderBy('start_date', 'desc')
         ->get();
 
-        return [
+        return response()->json([
             'status' => 'OK',
             'user' => $customer,
             'car' => $car,
             'bookings' => $bookings
-        ];
+        ]);
     }
 
     public function book(Request $request){
@@ -88,11 +88,11 @@ class BookingController extends Controller
         $booking->start_date = Carbon::now();
         $booking->end_date = Carbon::now();
         $booking->save();
-        return [
+        return response()->json([
             'status' => 'OK',
             'message' => 'Booked',
             'booking' => $booking->ohid
-        ];
+        ]);
 
     }
 
@@ -103,11 +103,11 @@ class BookingController extends Controller
         ->orderBy('active', 'desc')
         ->orderBy('start_date', 'DESC')
         ->paginate(5);
-        return [
+        return response()->json([
             'status' => 'OK',
             'message' => 'Booking history retrieved',
             'bookings' => $bookings
-        ];
+        ]);
     }
 
     public function pay(Request $request, $ohid){

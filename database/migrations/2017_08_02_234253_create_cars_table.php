@@ -16,7 +16,7 @@ class CreateCarsTable extends Migration
         Schema::create('cars', function (Blueprint $table) {
             $table->increments('cid');
 
-            $table->integer('cbid')->unsigned();
+            $table->integer('cbid')->unsigned()->nullable();
             $table->foreign('cbid')
             ->references('cbid')
             ->on('car_brands')

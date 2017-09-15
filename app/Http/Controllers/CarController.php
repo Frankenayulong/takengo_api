@@ -74,7 +74,7 @@ class CarController extends Controller
                     return $item->active_order_count <= 0;
                 })->values()
         );
-        return $car;
+        return response()->json($car);
     }
 
     public function detail(Request $request, $cid){
@@ -94,10 +94,10 @@ class CarController extends Controller
                 "message" => "Car not found"
             ];
         }
-        return [
+        return response()->json([
             "status" => 'OK',
             'car' => $car
-        ];
+        ]);
     }
 
     public function image_by_name(Request $request, $cid, $name){

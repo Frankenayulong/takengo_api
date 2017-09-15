@@ -30,8 +30,8 @@ class LoginTest extends TestCase
     * @group login
     */
     public function testIncorrectEmail(){
-        $incorrect_email = str_random(20) . '@' . str_random('5');
-        $email = str_random(20) . '@' . str_random('5') . '.' . str_random('3');
+        $incorrect_email = str_random(20) . '@' . str_random(5);
+        $email = str_random(20) . '@' . str_random(5) . '.' . 'com';
         Customer::where('email', $email)->delete();
         $response = $this->json('POST', '/api/login', 
         ['email' => $incorrect_email,
@@ -52,7 +52,7 @@ class LoginTest extends TestCase
     * @group login
     */
     public function testSuccessLogin(){
-        $email = str_random(20) . '@' . str_random('5') . '.' . str_random('3');
+        $email = str_random(20) . '@' . str_random(5) . '.' . 'com';
         $user = $this->createUser($email);
         $response = $this->json('POST', '/api/login', 
         ['email' => $email,
@@ -72,7 +72,7 @@ class LoginTest extends TestCase
     * @group login
     */
     public function testWrongPassword(){
-        $email = str_random(20) . '@' . str_random('5') . '.' . str_random('3');
+        $email = str_random(20) . '@' . str_random(5) . '.' . 'com';
         $user = $this->createUser($email);
         $response = $this->json('POST', '/api/login', 
         ['email' => $email,
@@ -82,6 +82,46 @@ class LoginTest extends TestCase
             'status' => 'NOTOK',
             'message' => 'Invalid Credentials'
         ]);
+        $this->deleteuser($user);
+    }
+
+    /**
+    * @group login
+    * @group token
+    */
+    public function testSuccessToken(){
+        $email = str_random(20) . '@' . str_random(5) . '.' . 'com';
+        $user = $this->createUser($email);
+        $response = $this->json('POST', '/api/login', 
+        ['email' => $email,
+        'password' => 'testing']);
+        $response->assertStatus(200);
+        $response->assertJson([
+            'status' => 'OK'
+        ]);
+        $data = $response->getData();
+        $token = $data->token;
+        $email = $data->email;
+        $uid = $data->uid;
+
+        $response = $this->json('POST', '/api/token', [],
+        [
+            'X-TKNG-UID' => $uid,
+            'X-TKNG-TKN' => $token,
+            'X-TKNG-EM' => $email
+        ]);
+        $response->assertStatus(200);
+        $response->assertJson([
+            'status' => 'OK',
+            "message" => "Token Authorized"
+        ]);
+        $data = $response->getData();
+        $this->assertTrue($data->uid == $uid);
+        $this->assertTrue($data->email == $email);
+        $this->assertTrue($data->token == $token);
+        $this->assertTrue($data->first_name == 'Veronica');
+        $this->assertTrue(count($data->orders) == 0);
+        
         $this->deleteuser($user);
     }
 }
