@@ -220,6 +220,15 @@ class RouteTest extends TestCase
     /**
     * @group route
     */
+    public function testAdminCarUpdateLocationRoute(){
+        $response = $this->post('/api/admin/cars/1/update-location');
+        $this->assertTrue($response->getStatusCode() != 404);
+        $this->assertTrue($response->getStatusCode() != 500);
+    }
+
+    /**
+    * @group route
+    */
     public function testAdminBrandsRoute(){
         $response = $this->post('/api/admin/brands');
         $this->assertTrue($response->getStatusCode() != 404);

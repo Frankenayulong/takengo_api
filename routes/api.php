@@ -41,6 +41,7 @@ Route::get('/img/cars/{cid}/{name}', 'CarController@image_by_name');
 
 Route::post('/admin/cars', 'Admin\CarController@show');
 Route::post('/admin/cars/{cid}/picture/upload', 'Admin\CarController@upload');
+Route::post('/admin/cars/{cid}/update-location', 'Admin\CarController@change_location');
 Route::post('/admin/brands', 'Admin\CarController@brands');
 Route::post('/admin/cars/create', 'Admin\CarController@create');
 Route::post('/admin/cars/show/{cid}', 'Admin\CarController@single');

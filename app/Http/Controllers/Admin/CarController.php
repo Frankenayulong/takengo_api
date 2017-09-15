@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use App\Car;
 use App\CarBrand;
 use App\CarPicture;
+use App\CarLocation;
 use App\Classes\Slim;
 
 class CarController extends Controller
@@ -86,10 +87,34 @@ class CarController extends Controller
         ];
     }
 
+    public function change_location(Request $request, $cid){
+        $car = Car::find($cid);
+        if(!$car){
+            return response()->json([
+                'status' => 'NOT OK'
+            ]);
+        }
+        $latitude = $request->input('latitude', null);
+        $longitude = $request->input('longitude', null);
+        if($latitude == null || $longitude == null){
+            return response()->json([
+                'status' => 'NOT OK'
+            ]);
+        }
+        $loc = new CarLocation;
+        $loc->car()->associate($car);
+        $loc->lat = $latitude;
+        $loc->long = $longitude;
+        $loc->save();
+        return response()->json([
+            'status' => 'OK'
+        ]);
+    }
+
     public function upload(Request $request, $cid){
         
         $car = Car::findOrFail($cid);
-    
+        
         if ( $request->picture )
         {
             // Pass Slim's getImages the name of your file input, and since we only care about one image, postfix it with the first array key
@@ -115,14 +140,12 @@ class CarController extends Controller
     
                 $carPicture = new CarPicture;
                 $carPicture->pic_name = $file['name'];
-                $carPicture->format = explode('.', $file['name'])[count(explode('.', $file['name'])) - 1];
+                $carPicture->format = pathinfo($imagePath)['extension'];
                 $carPicture->original_full_path = $imagePath;
                 $carPicture->car()->associate($car);
                 $carPicture->save();
 
-                return response([
-                    $request, $carPicture, $imagePath
-                ]);
+                return response()->json($carPicture);
             }
         }
     }
