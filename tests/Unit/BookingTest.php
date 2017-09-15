@@ -305,4 +305,52 @@ class BookingTest extends TestCase
          $this->deleteUser($user);
          $this->deleteCar($car);
      }
+
+     /**
+     * @group booking
+     */
+     public function testAuthenticatedStopBooking()
+     {
+         $email = str_random(20) . '@' . str_random(5) . '.' . 'com';
+         $user = $this->createUser($email);
+         $header = $this->login($user);
+         $car = $this->createCar();
+         $booking = $this->createBooking($user, $car);
+         sleep(3);
+         $response = $this->json('POST', '/api/booking/'.$booking->ohid.'/cancel', [], $header);
+         $response->assertStatus(200);
+         $response->assertJson([
+             'status' => true
+         ]);
+         $transformed = CarBooking::find($booking->ohid);
+         $this->assertFalse($transformed->end_date == $booking->end_date);
+         $this->assertFalse($transformed->active);
+         $this->deleteBooking($booking);
+         $this->deleteUser($user);
+         $this->deleteCar($car);
+     }
+
+     /**
+     * @group booking
+     */
+     public function testNotAuthenticatedStopBooking()
+     {
+         $email = str_random(20) . '@' . str_random(5) . '.' . 'com';
+         $user = $this->createUser($email);
+         $car = $this->createCar();
+         $booking = $this->createBooking($user, $car);
+         $response = $this->json('POST', '/api/booking/'.$booking->ohid.'/cancel', [], []);
+         $response->assertStatus(200);
+         $response->assertJson([
+             'status' => true,
+             'message' => true
+         ]);
+         $data = $response->getData();
+         $this->assertTrue($data->status == 'NOT OK');
+         $transformed = CarBooking::find($booking->ohid);
+         $this->assertTrue($transformed->active);
+         $this->deleteBooking($booking);
+         $this->deleteUser($user);
+         $this->deleteCar($car);
+     }
 }
