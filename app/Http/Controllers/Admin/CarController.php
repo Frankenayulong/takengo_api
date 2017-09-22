@@ -25,6 +25,13 @@ class CarController extends Controller
         return $car;
     }
 
+    public function delete(Request $request, $cid){
+        Car::where('cid', $cid)->delete();
+        return [
+            'status' => 'OK'
+        ];
+    }
+
 
     public function brands(Request $request){
         $brands = CarBrand::get();
