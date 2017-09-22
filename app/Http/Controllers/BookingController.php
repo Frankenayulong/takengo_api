@@ -85,8 +85,8 @@ class BookingController extends Controller
             $booking->car_lat = $car->last_location[0]->lat;
             $booking->car_long = $car->last_location[0]->long;
         }
-        $booking->start_date = Carbon::now();
-        $booking->end_date = Carbon::now();
+        $booking->start_date = $start_date;
+        $booking->end_date = $end_date;
         $booking->save();
         return response()->json([
             'status' => 'OK',
