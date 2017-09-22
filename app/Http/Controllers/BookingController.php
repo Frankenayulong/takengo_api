@@ -195,7 +195,8 @@ class BookingController extends Controller
         return [
             'status' => 'OK',
             'start_date' => $booking->start_date,
-            'end_date' => $end
+            'end_date' => $end,
+            'price' => $booking->car_price
         ];
     }
 
@@ -225,7 +226,9 @@ class BookingController extends Controller
         
         return [
             'status' => 'OK',
-            'end_date' => $booking->end_date
+            'end_date' => $booking->end_date,
+            'start_date' =>  Carbon::parse($booking->start_date),
+            'price' => $booking->car_price
         ];
     }
 }

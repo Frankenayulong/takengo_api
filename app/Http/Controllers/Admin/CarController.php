@@ -15,9 +15,9 @@ class CarController extends Controller
 {
     public function show(Request $request){
         $car = Car::with('brand')->withCount(['orders as active_order' => function($q){
-            return $q->whereDate('start_date', '>=', Carbon::today()->toDateString())->where('active', true);
+            return $q->where('active', true);
         }, 'orders as inactive_order' => function($q){
-            return $q->whereDate('start_date', '>=', Carbon::today()->toDateString())->where('active', false);
+            return $q->where('active', false);
         }])
         ->orderBy('active_order_count', 'desc')
         ->orderBy('inactive_order_count', 'desc')
