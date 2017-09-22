@@ -33,6 +33,7 @@ Route::post('/book', 'BookingController@book')->middleware(['token']);
 Route::post('/book/history', 'BookingController@history')->middleware(['token']);
 // Route::post('/booking/{ohid}/pay', 'BookingController@pay')->middleware(['token']);
 Route::post('/booking/{ohid}/extend', 'BookingController@extend')->middleware(['token']);
+Route::post('/booking/{ohid}/start', 'BookingController@start')->middleware(['token']);
 Route::post('/booking/{ohid}/cancel', 'BookingController@cancel')->middleware(['token']);
 Route::post('/contact-us', 'ContactUsController@create');
 Route::post('/register-newsletter', 'NewsletterController@register');

@@ -40,6 +40,7 @@ class CreateOrdersHistoryTable extends Migration
             $table->double('car_long')->nullable();
 
             $table->boolean('active')->default(true);
+            $table->boolean('started')->default(false);
 
             // $table->json('metadata')->default(json_encode([
             //     'notes' => json_encode([]),

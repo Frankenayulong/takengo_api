@@ -162,6 +162,43 @@ class BookingController extends Controller
         ];
     }
 
+    public function start(Request $request, $ohid){
+        $latitude = $request->input('latitude', null);
+        $longitude = $request->input('longitude', null);
+        $booking = CarBooking::with('car')->withCount('transactions')->find($ohid);
+        if(!$booking || !$booking->active || $booking->transactions_count > 0 || $booking->uid != session('uid')){
+            return [
+                'status' => 'NOT OK',
+                'message' => 'cannot start'
+            ];
+        }
+        $end = Carbon::parse($booking->end_date);
+        DB::transaction(function () use($booking, $latitude, $longitude, $end) {
+            $booking->start_date = Carbon::now();
+            if($booking->start_date->gt($end)){
+                $start = Carbon::parse($booking->start_date);
+                $booking->end_date = $start->addMinutes(60);
+                $end = $booking->end_date;
+            }
+            $booking->started = true;
+            $booking->save();
+            if($latitude != null && $longitude != null){
+                $car = $booking->car;
+                $loc = new CarLocation;
+                $loc->car()->associate($car);
+                $loc->lat = $latitude;
+                $loc->long = $longitude;
+                $loc->save();
+            }
+        });
+        
+        return [
+            'status' => 'OK',
+            'start_date' => $booking->start_date,
+            'end_date' => $end
+        ];
+    }
+
     public function cancel(Request $request, $ohid){
         $latitude = $request->input('latitude', null);
         $longitude = $request->input('longitude', null);
@@ -187,7 +224,8 @@ class BookingController extends Controller
         });
         
         return [
-            'status' => 'OK'
+            'status' => 'OK',
+            'end_date' => $booking->end_date
         ];
     }
 }
