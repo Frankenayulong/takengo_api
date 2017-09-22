@@ -110,6 +110,35 @@ class BookingController extends Controller
         ]);
     }
 
+    public function extend(Request $request, $ohid){
+        $this->validate($request, [
+            'book_end_date' => 'required|date'
+        ]);
+        $end_date = $request->input('book_end_date');
+        $booking = CarBooking::find($ohid);
+        if(!$booking || !$booking->active || $booking->uid != session('uid')){
+            return [
+                'status' => 'NOT OK',
+                'message' => 'cannot extend booking'
+            ];
+        }
+        
+        $end = Carbon::parse($booking->end_date);
+        $start = Carbon::parse($booking->start_date);
+        if($start->gt($end_date) || Carbon::now()->gt($end_date) || $end->gt($end_date)){
+            return [
+                'status' => 'NOT OK',
+                'message' => 'Invalid end date'
+            ];
+        }
+        $booking->end_date = $end_date;
+        $booking->save();
+        return [
+            'status' => 'OK',
+            'date' => $order->end_date
+        ];
+    }
+
     public function pay(Request $request, $ohid){
         $booking = CarBooking::with('car')->withCount('transactions')->find($ohid);
         if(!$booking || !$booking->active || $booking->transactions_count > 0 || $booking->uid != session('uid')){
@@ -140,7 +169,7 @@ class BookingController extends Controller
         if(!$booking || !$booking->active || $booking->transactions_count > 0 || $booking->uid != session('uid')){
             return [
                 'status' => 'NOT OK',
-                'message' => 'cannot pay booking'
+                'message' => 'cannot stop booking'
             ];
         }
         DB::transaction(function () use($booking, $latitude, $longitude) {
