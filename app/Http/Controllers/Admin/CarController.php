@@ -68,7 +68,9 @@ class CarController extends Controller
             'air_conditioned' => 'required|boolean',
             'fuel_policy' => 'nullable',
             'unlimited_mileage' => 'required|boolean',
-            'limit_mileage' => 'nullable|numeric'
+            'limit_mileage' => 'nullable|numeric',
+            'lat' => 'nullable|numeric',
+            'long' => 'nullable|numeric',
         ]);
         $car = new Car;
         $car->name = $request->name;
@@ -87,6 +89,11 @@ class CarController extends Controller
         $car->unlimited_mileage = $request->input('unlimited_mileage', 1);
         $car->limit_mileage = $request->input('limit_mileage', 0);
         $car->save();
+        $loc = new CarLocation;
+        $loc->car()->associate($car);
+        $loc->lat = $request->input('lat', -37.800426);
+        $loc->long = $request->input('long', 144.9352466);
+        $loc->save();
         return [
             "status" => 'OK',
             "message" => 'Car saved',
