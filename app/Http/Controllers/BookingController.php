@@ -122,13 +122,18 @@ class BookingController extends Controller
                 'message' => 'cannot extend booking'
             ];
         }
-        
+        $end_date = Carbon::parse($end_date);
         $end = Carbon::parse($booking->end_date);
         $start = Carbon::parse($booking->start_date);
         if($start->gt($end_date) || Carbon::now()->gt($end_date) || $end->gt($end_date)){
             return [
                 'status' => 'NOT OK',
-                'message' => 'Invalid end date'
+                'message' => 'Invalid end date',
+                '1' => $start->gt($end_date) ? 'dafuq' : 'nil',
+                '2' => Carbon::now()->gt($end_date) ? 'dafuq': 'nil',
+                'now' => Carbon::now(),
+                'end_date' => $end_date,
+                '3' => $end->gt($end_date) ? 'dafuq' : 'nil'
             ];
         }
         $booking->end_date = $end_date;
