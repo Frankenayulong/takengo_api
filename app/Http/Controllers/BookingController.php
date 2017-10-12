@@ -135,7 +135,7 @@ class BookingController extends Controller
         $booking->save();
         return [
             'status' => 'OK',
-            'date' => $order->end_date
+            'date' => $booking->end_date
         ];
     }
 
